@@ -1,0 +1,2 @@
+// Client main js
+// test
