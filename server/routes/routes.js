@@ -1,14 +1,16 @@
 const express = require('express');
-const Model = require('../models/model');
+const Model = require('../models/weeds');
 const router = express.Router();
 
 //Post Method
 router.post('/post', async (req, res) => {
-    console.log(req.body.name)
-
     const data = new Model({
         name: req.body.name,
-        age: req.body.age
+        category: req.body.category,
+        tags: req.body.tags,
+        created_date: req.body.created_date,
+        harvest_date: req.body.harvest_date,
+        weeks: req.body.weeks
     })
 
     try {
