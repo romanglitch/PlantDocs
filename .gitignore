@@ -5,5 +5,5 @@ out
 gen
 
 # Others
-/backend/node_modules/
-/frontend/node_modules/
+/weed-docs-backend/node_modules/
+/weed-docs-frontend/node_modules/
