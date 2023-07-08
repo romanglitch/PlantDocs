@@ -4,7 +4,8 @@
   "info": {
     "singularName": "plant",
     "pluralName": "plants",
-    "displayName": "plant"
+    "displayName": "plant",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -24,6 +25,9 @@
       "relation": "manyToMany",
       "target": "api::category.category",
       "mappedBy": "plants"
+    },
+    "weeks": {
+      "type": "json"
     }
   }
 }

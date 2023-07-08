@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import {Link} from "react-router-dom";
 
 const Plants = () => {
     const [error, setError] = useState(null);
@@ -19,11 +20,9 @@ const Plants = () => {
 
     return (
         <div className="listing">
-            <ul>
                 {plants.map(({ id, attributes }) => (
-                    <li key={id}>{attributes.Name}</li>
+                    <Link key={id} to={'/plants/' + id}>{attributes.Name}</Link>
                 ))}
-            </ul>
         </div>
     );
 };

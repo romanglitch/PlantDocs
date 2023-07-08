@@ -7,6 +7,7 @@ import ConnectPage from '../ConnectPage';
 import HomePage from '../HomePage';
 import NotFoundPage from '../NotFoundPage';
 import PlantPage from '../PlantPage';
+import TestPage from "../TestPage";
 import PrivateRoute from '../PrivateRoute';
 
 // Design
@@ -22,10 +23,10 @@ const App = () => {
                     <Route path="/auth/:authType" element={<AuthPage/>}/>
                     <Route exact path='/' element={<PrivateRoute/>}>
                         <Route exact path='/' element={<HomePage/>}/>
-                        <Route exact path='/p' element={<HomePage/>}/>
+                        <Route exact path="/plants/:id" element={<PlantPage/>}/>
+                        <Route exact path='/test' element={<TestPage/>}/>
                     </Route>
                     <Route exact path="/connect/:provider" element={<ConnectPage/>}/>
-                    <Route path="/plants/:id" element={<PlantPage/>}/>
                     <Route path="*" element={<NotFoundPage/>}/>
                 </Routes>
             </div>
