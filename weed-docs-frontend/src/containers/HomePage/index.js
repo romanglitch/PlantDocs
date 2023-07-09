@@ -14,9 +14,9 @@ export default function HomePage() {
     const navigate = useNavigate()
 
     return (
-        <div style={{marginTop: '15%'}}>
-            <h1>You're now logged in!!!</h1>
-            <div style={{marginTop: '50px'}}>
+        <div className="homepage">
+            <h1 className="homepage__title">Привет!</h1>
+            <div className="homepage__actions">
                 <Button
                     primary
                     onClick={() => {
@@ -27,7 +27,10 @@ export default function HomePage() {
                     Logout
                 </Button>
             </div>
-            <Plants />
+            <h2 className="homepage__subtitle">Твои растишки!</h2>
+            <div className="homepage__plants">
+                <Plants />
+            </div>
         </div>
     );
 }

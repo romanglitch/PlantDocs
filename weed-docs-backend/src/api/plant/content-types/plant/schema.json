@@ -27,7 +27,10 @@
       "mappedBy": "plants"
     },
     "weeks": {
-      "type": "json"
+      "displayName": "weeks",
+      "type": "component",
+      "repeatable": true,
+      "component": "main.weeks"
     }
   }
 }

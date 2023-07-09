@@ -11,14 +11,11 @@ const TestPage = () => {
             .post("http://localhost:1337/api/plants", {
                 data: {
                     Name: "From API",
-                    Content: "Test content",
-                    weeks: {
-                        testValue: 'sdssdsd'
-                    }
+                    Content: "Test content"
                 },
             })
             .then((response) => {
-                console.log(response);
+                console.log('Элемент добавлен: ', response);
             });
     }
 

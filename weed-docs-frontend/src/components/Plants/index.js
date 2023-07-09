@@ -8,7 +8,7 @@ const Plants = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:1337/api/plants")
+            .get("http://localhost:1337/api/plants?populate[0]=categories")
             .then(({ data }) => setPlants(data.data))
             .catch((error) => setError(error));
     }, []);
@@ -21,7 +21,18 @@ const Plants = () => {
     return (
         <div className="listing">
                 {plants.map(({ id, attributes }) => (
-                    <Link key={id} to={'/plants/' + id}>{attributes.Name}</Link>
+                    <Link className="listing__item" key={id} to={'/plants/' + id}>
+                        <div className="listing__item__name">{attributes.Name}</div>
+                        <div className="listing__item__category">
+                            {
+                                attributes.categories.data.map((cat_data) => (
+                                    <div className="cat" data-id={cat_data.id} key={cat_data.id}>
+                                        {cat_data.attributes.Name}
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    </Link>
                 ))}
         </div>
     );
