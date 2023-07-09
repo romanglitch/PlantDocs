@@ -99,7 +99,7 @@ const PlantPage = () => {
                 </div>
             ) : false}
             <div className="plant-page__row plant-page__footer">
-                <Link className="plant-page__link" to="/">Go home</Link>
+                <Link className="plant-page__link" to="/">Вернуться к растишкам</Link>
             </div>
         </div>
     );
