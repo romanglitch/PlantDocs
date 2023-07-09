@@ -52,13 +52,18 @@ const PlantPage = () => {
             </div>
             <div className="plant-page__row plant-page__weeks">
                 {plantsPage.weeks ? (
-                    plantsPage.weeks.map((data) => (
+                    plantsPage.weeks.map((data, index) => (
                         <div className="week" data-id={data.id} key={data.id}>
-                            <div className="week__title">Неделя: {data.id}</div>
+                            <div className="week__title">
+                                Неделя: {index + 1}
+                            </div>
                             <div className="week__days">
                                 {
-                                    data.days.map((days_data) => (
+                                    data.days.map((days_data, index) => (
                                         <div className="day" data-id={days_data.id} key={days_data.id}>
+                                            <div className="day__title">
+                                                ({index + 1} день)
+                                            </div>
                                             <div className="day__date">
                                                 {days_data.date}
                                             </div>
@@ -70,7 +75,7 @@ const PlantPage = () => {
                                                                 {tags_data.attributes.name}
                                                             </div>
                                                             <div className="tag__icon">
-                                                                <img src={'http://localhost:1337' + tags_data.attributes.icon.data.attributes.url} />
+                                                                <img src={'http://localhost:1337' + tags_data.attributes.icon.data.attributes.url} alt={tags_data.attributes.name} />
                                                             </div>
 
                                                         </div>
