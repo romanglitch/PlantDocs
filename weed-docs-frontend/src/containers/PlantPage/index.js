@@ -33,6 +33,8 @@ const PlantPage = () => {
         return <div>An error occured: {error.message}</div>;
     }
 
+    console.log(plantsPage)
+
     return (
         <div className="plant-page">
             <div className="plant-page__row plant-page__header">
@@ -84,7 +86,6 @@ const PlantPage = () => {
                                                                 <div className="tag__icon">
                                                                     <img src={'http://localhost:1337' + tags_data.attributes.icon.data.attributes.url} alt={tags_data.attributes.name} />
                                                                 </div>
-
                                                             </div>
                                                         ))
                                                     ) : false}

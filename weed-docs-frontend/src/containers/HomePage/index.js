@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, Link} from 'react-router-dom';
 
 import Button from '../../components/Button';
 import Plants from '../../components/Plants';
@@ -15,7 +15,10 @@ export default function HomePage() {
 
     return (
         <div className="homepage">
-            <h1 className="homepage__title">Привет!</h1>
+            <h1 className="homepage__title">
+                Привет!
+                <br></br>Домашняя страница
+            </h1>
             <div className="homepage__actions">
                 <Button
                     primary
@@ -26,6 +29,7 @@ export default function HomePage() {
                 >
                     Logout
                 </Button>
+                <Link to="http://localhost:1337/">To admin</Link>
             </div>
             <h2 className="homepage__subtitle">Твои растишки!</h2>
             <div className="homepage__plants">
