@@ -29,7 +29,7 @@ export default function HomePage() {
                 >
                     Logout
                 </Button>
-                <Link to="http://localhost:1337/">To admin</Link>
+                <Link to={process.env.REACT_APP_BACKEND}>To admin</Link>
             </div>
             <h2 className="homepage__subtitle">Твои растишки!</h2>
             <div className="homepage__plants">

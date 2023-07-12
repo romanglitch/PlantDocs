@@ -8,7 +8,7 @@ const Plants = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:1337/api/plants?populate[0]=categories`)
+            .get(`${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories`)
             .then(({ data }) => setPlants(data.data))
             .catch((error) => setError(error));
     }, []);

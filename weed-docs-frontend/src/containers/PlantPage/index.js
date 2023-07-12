@@ -20,7 +20,7 @@ const PlantPage = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:1337/api/plants/${id}?populate[0]=weeks.days.tags.icon&populate[1]=categories`)
+            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon&populate[1]=categories`)
             .then(({ data }) => setPlantsPage(data.data.attributes))
             .catch((error) => setError(error));
     }, [id]);
@@ -86,7 +86,7 @@ const PlantPage = () => {
 
                                                 let config = {
                                                     method: 'put',
-                                                    url: `http://localhost:1337/api/plants/${id}`,
+                                                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}`,
                                                     headers: {
                                                         'Authorization': 'Bearer ' + auth.getToken(),
                                                         'Content-Type': 'application/json'
@@ -115,7 +115,7 @@ const PlantPage = () => {
                                                                 {tags_data.attributes.name}
                                                             </div>
                                                             <div className="tag__icon">
-                                                                <img src={'http://localhost:1337' + tags_data.attributes.icon.data.attributes.url} alt={tags_data.attributes.name} />
+                                                                <img src={process.env.REACT_APP_BACKEND + tags_data.attributes.icon.data.attributes.url} alt={tags_data.attributes.name} />
                                                             </div>
                                                         </div>
                                                     ))
