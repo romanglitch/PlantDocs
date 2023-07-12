@@ -160,3 +160,7 @@
     margin: 0;
     margin-bottom: -30px;
 }
+
+.day.--passed {
+    background: #c74d4d;
+}

@@ -1,17 +1,51 @@
 module.exports = {
-  beforeCreate(event) {
-    const { data, where, select, populate } = event.params;
-    // !TODO: При создании добавлять один блок недели и 7 дней
-    // console.log(event.params)
-
-    // Edit content
-    // event.params.data.Content = 'Content edited'
-
-  },
-
   afterCreate(event) {
     const { result, params } = event;
 
-    // do something to the result;
+    const getDate = (addDays) => {
+      let today = new Date();
+      let getDate = addDays ? today.getDate() + addDays : today.getDate();
+      let dd = String(getDate).padStart(2, '0');
+      let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+      let yyyy = today.getFullYear();
+
+      today = yyyy + '-' + mm + '-' + dd;
+
+      return today
+    }
+
+    //
+    strapi.entityService.update('api::plant.plant', result.id, {
+      data: {
+        Name: result.Name + '(1 week / 7 days added)',
+        weeks: [
+          {
+            days: [
+              {
+                date: getDate()
+              },
+              {
+                date: getDate(1)
+              },
+              {
+                date: getDate(2)
+              },
+              {
+                date: getDate(3)
+              },
+              {
+                date: getDate(4)
+              },
+              {
+                date: getDate(5)
+              },
+              {
+                date: getDate(6)
+              }
+            ]
+          }
+        ],
+      },
+    });
   },
 }
