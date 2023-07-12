@@ -9,6 +9,7 @@ import Footer from '../../components/Footer';
 import AuthPage from '../AuthPage';
 import HomePage from '../HomePage';
 import PlantPage from '../PlantPage';
+import EditPlantPage from '../EditPlantPage';
 import NotFoundPage from '../NotFoundPage';
 import PrivateRoute from '../PrivateRoute';
 
@@ -27,6 +28,8 @@ const App = () => {
                     <Route exact path='/' element={<PrivateRoute/>}>
                         <Route exact path='/' element={<HomePage/>}/>
                         <Route exact path="/plants/:id" element={<PlantPage/>}/>
+                        <Route exact path="/plants/create" element={<EditPlantPage/>}/>
+                        <Route exact path="/plants/:id/update/" element={<EditPlantPage/>}/>
                     </Route>
                     <Route path="*" element={<NotFoundPage/>}/>
                 </Routes>

@@ -5,10 +5,8 @@
  */
 
 import React, {useState} from 'react';
-import {findIndex, get} from 'lodash';
+import {get} from 'lodash';
 import {useParams, useNavigate} from 'react-router-dom';
-
-import Input from '../../components/InputsIndex';
 
 // Utils
 import auth from '../../utils/auth';
@@ -67,63 +65,36 @@ export default function AuthPage() {
         <div className="App-main App-main_type_auth">
             <div className="App-container">
                 <form className="App-auth-form" onSubmit={handleSubmit}>
-                    <Input
-                        didCheckErrors={state.didCheckErrors}
-                        errors={get(
-                            state.errors,
-                            [
-                                findIndex(state.errors, ['name', 'identifier']),
-                                'errors',
-                            ],
-                            []
-                        )}
-                        key="identifier"
-                        label="Имя пользователя или E-mail"
-                        name="identifier"
-                        onChange={handleChange}
-                        placeholder="johndoe@gmail.com"
-                        type="text"
-                        validations={{required: true}}
-                        value={get(state.value, 'identifier', '')}
-                    />
+                    <label>
+                        <b>Username / E-mail:</b>
+                        <input
+                            name="identifier"
+                            onChange={handleChange}
+                            placeholder="johndoe@gmail.com"
+                            type="text"
+                            value={get(state.value, 'identifier', '')}
+                        />
+                    </label>
 
-                    <Input
-                        didCheckErrors={state.didCheckErrors}
-                        errors={get(
-                            state.errors,
-                            [
-                                findIndex(state.errors, ['name', 'password']),
-                                'errors',
-                            ],
-                            []
-                        )}
-                        key="password"
-                        label="Пароль"
-                        name="password"
-                        onChange={handleChange}
-                        type="password"
-                        validations={{required: true}}
-                        value={get(state.value, 'password', '')}
-                    />
+                    <label>
+                        <b>Password:</b>
+                        <input
+                            name="password"
+                            onChange={handleChange}
+                            type="text"
+                            value={get(state.value, 'password', '')}
+                        />
+                    </label>
 
-                    <Input
-                        didCheckErrors={state.didCheckErrors}
-                        errors={get(
-                            state.errors,
-                            [
-                                findIndex(state.errors, ['name', 'rememberMe']),
-                                'errors',
-                            ],
-                            []
-                        )}
-                        key="rememberMe"
-                        label="Запомнить меня"
-                        name="rememberMe"
-                        onChange={handleChange}
-                        type="checkbox"
-                        validations={{required: true}}
-                        value={get(state.value, 'rememberMe', '')}
-                    />
+                    <label>
+                        <b>Remember me</b>
+                        <input
+                            name="rememberMe"
+                            onChange={handleChange}
+                            type="checkbox"
+                            value={get(state.value, 'rememberMe', '')}
+                        />
+                    </label>
 
                     <button type="submit">Войти</button>
                 </form>
