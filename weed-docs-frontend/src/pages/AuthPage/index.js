@@ -68,6 +68,7 @@ export default function AuthPage() {
                     <label>
                         <b>Username / E-mail:</b>
                         <input
+                            autoComplete="on"
                             name="identifier"
                             onChange={handleChange}
                             placeholder="johndoe@gmail.com"
@@ -79,6 +80,7 @@ export default function AuthPage() {
                     <label>
                         <b>Password:</b>
                         <input
+                            autoComplete="on"
                             name="password"
                             onChange={handleChange}
                             type="text"
