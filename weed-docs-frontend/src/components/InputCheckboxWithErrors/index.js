@@ -25,13 +25,12 @@ export default function InputCheckboxWithErrors(props) {
         if (!isEmpty(errors)) {
             setState({errors});
         }
-    }, [])
+    }, [props])
 
 
     const {
         autoFocus,
         className,
-        customBootstrapClass,
         disabled,
         errorsClassName,
         errorsStyle,
@@ -75,7 +74,6 @@ export default function InputCheckboxWithErrors(props) {
         <div
             className={cn(
                 'inputCheckboxContainer',
-                customBootstrapClass,
                 !isEmpty(className) && className
             )}
             style={style}

@@ -49,7 +49,6 @@ class InputTextWithErrors extends React.Component {
         const {
             autoFocus,
             className,
-            customBootstrapClass,
             deactivateErrorHighlight,
             disabled,
             errorsClassName,
@@ -90,7 +89,6 @@ class InputTextWithErrors extends React.Component {
             <div
                 className={cn(
                     'inputTextWithErrors',
-                    customBootstrapClass,
                     !isEmpty(className) && className
                 )}
                 style={style}

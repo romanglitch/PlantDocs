@@ -30,10 +30,6 @@ function Button(props) {
             className={cn(
                 'button',
                 props.primary && 'primary',
-                props.social === 'facebook' && 'primary',
-                props.social === 'github' && 'github',
-                props.social === 'google' && 'google',
-                props.social === 'twitter' && 'twitter'
             )}
             type={props.type || 'button'}
             {...buttonProps}

@@ -8,8 +8,10 @@ import React from 'react';
 
 function NotFoundPage(props) {
     return (
-        <div>
-            <p>The page you're looking for doesn't exist.</p>
+        <div className="App-main App-main_type_error">
+            <div className="App-container">
+                Not found page...
+            </div>
         </div>
     );
 }

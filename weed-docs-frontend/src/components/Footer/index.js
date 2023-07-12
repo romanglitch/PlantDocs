@@ -8,10 +8,13 @@ import React from 'react';
 
 import './styles.css';
 
-/* eslint-disable react/require-default-props */
 function Footer() {
     return (
-        <div>Footer</div>
+        <div className="App-footer">
+            <div className="App-container">
+                {/*  Footer content  */}
+            </div>
+        </div>
     );
 }
 

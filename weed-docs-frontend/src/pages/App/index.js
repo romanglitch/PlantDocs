@@ -7,11 +7,9 @@ import Footer from '../../components/Footer';
 
 // Routes
 import AuthPage from '../AuthPage';
-import ConnectPage from '../ConnectPage';
 import HomePage from '../HomePage';
-import NotFoundPage from '../NotFoundPage';
 import PlantPage from '../PlantPage';
-import TestPage from "../TestPage";
+import NotFoundPage from '../NotFoundPage';
 import PrivateRoute from '../PrivateRoute';
 
 // Design
@@ -29,9 +27,7 @@ const App = () => {
                     <Route exact path='/' element={<PrivateRoute/>}>
                         <Route exact path='/' element={<HomePage/>}/>
                         <Route exact path="/plants/:id" element={<PlantPage/>}/>
-                        <Route exact path='/test' element={<TestPage/>}/>
                     </Route>
-                    <Route exact path="/connect/:provider" element={<ConnectPage/>}/>
                     <Route path="*" element={<NotFoundPage/>}/>
                 </Routes>
                 <Footer />

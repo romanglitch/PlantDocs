@@ -5,9 +5,7 @@
 .plant-page {
     display: grid;
     grid-gap: 30px;
-    max-width: 1180px;
     margin: auto;
-    padding: 30px;
 }
 
 .plant-page__header {
