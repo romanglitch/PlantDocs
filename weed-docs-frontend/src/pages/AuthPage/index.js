@@ -4,9 +4,9 @@
  *
  */
 
-import React, {useState} from 'react';
-import {get} from 'lodash';
-import {useParams, useNavigate} from 'react-router-dom';
+import React, { useState } from 'react';
+import { get, set } from 'lodash';
+import { useParams, useNavigate } from 'react-router-dom';
 
 // Utils
 import auth from '../../utils/auth';
@@ -27,13 +27,14 @@ const getRequestURL = (authType) => {
     return requestURL;
 };
 
+
 export default function AuthPage() {
     let [state, setState] = useState({value: {}, errors: [], didCheckErrors: false});
-    let {authType} = useParams();
+    let { authType } = useParams();
     const navigate = useNavigate();
 
     const handleChange = ({target}) => setState({
-        value: {...state.value, [target.name]: target.value},
+        value: {...state.value, [target.name]: target.value}
     });
 
     const handleSubmit = e => {
@@ -41,19 +42,25 @@ export default function AuthPage() {
         const body = state.value;
         const requestURL = getRequestURL(authType);
 
+        // This line is required for the callback url to redirect your user to app
+        if (authType === 'forgot-password') {
+            set(body, 'url', 'http://localhost:3000/auth/reset-password');
+        }
+
         request(requestURL, {method: 'POST', body: state.value})
             .then(response => {
                 auth.setToken(response.jwt, body.rememberMe);
                 auth.setUserInfo(response.user, body.rememberMe);
-                alert("Auth success")
+                alert("Redirecting user")
                 redirectUser();
             })
             .catch(err => {
+                // TODO handle errors for other views
                 // This is just an example
                 const errors = [
-                    {name: 'identifier', errors: [err.response.payload.error.message]},
+                    { name: 'identifier', errors: [err.response.payload.error.message] },
                 ];
-                setState({...state.value, didCheckErrors: !state.didCheckErrors, errors});
+                setState({ ...state.value, didCheckErrors: !state.didCheckErrors, errors });
             });
     };
 
@@ -64,42 +71,46 @@ export default function AuthPage() {
     return (
         <div className="App-main App-main_type_auth">
             <div className="App-container">
-                <form className="App-auth-form" onSubmit={handleSubmit}>
-                    <label>
-                        <b>Username / E-mail:</b>
-                        <input
-                            autoComplete="on"
-                            name="identifier"
-                            onChange={handleChange}
-                            placeholder="johndoe@gmail.com"
-                            type="text"
-                            value={get(state.value, 'identifier', '')}
-                        />
-                    </label>
+                {auth.getUserInfo() ? (
+                    <div>loggged in</div>
+                ) : (
+                    <form className="App-auth-form" onSubmit={handleSubmit}>
+                        <label>
+                            <b>Username / E-mail:</b>
+                            <input
+                                name="identifier"
+                                onChange={handleChange}
+                                placeholder="johndoe@gmail.com"
+                                type="text"
+                                required
+                                value={get(state.value, 'identifier', '')}
+                            />
+                        </label>
 
-                    <label>
-                        <b>Password:</b>
-                        <input
-                            autoComplete="on"
-                            name="password"
-                            onChange={handleChange}
-                            type="text"
-                            value={get(state.value, 'password', '')}
-                        />
-                    </label>
+                        <label>
+                            <b>Password:</b>
+                            <input
+                                name="password"
+                                onChange={handleChange}
+                                type="password"
+                                required
+                                value={get(state.value, 'password', '')}
+                            />
+                        </label>
 
-                    <label>
-                        <b>Remember me</b>
-                        <input
-                            name="rememberMe"
-                            onChange={handleChange}
-                            type="checkbox"
-                            value={get(state.value, 'rememberMe', '')}
-                        />
-                    </label>
+                        <label>
+                            <b>Remember me</b>
+                            <input
+                                name="rememberMe"
+                                onChange={handleChange}
+                                type="checkbox"
+                                value={get(state.value, 'rememberMe', '')}
+                            />
+                        </label>
 
-                    <button type="submit">Войти</button>
-                </form>
+                        <button type="submit">Войти</button>
+                    </form>
+                )}
             </div>
         </div>
     );

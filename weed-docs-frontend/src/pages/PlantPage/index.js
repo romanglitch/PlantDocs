@@ -44,6 +44,18 @@ const PlantPage = () => {
         return reformated
     }
 
+    const getDate = (addDays) => {
+        let today = new Date();
+        let getDate = addDays ? today.getDate() + addDays : today.getDate();
+        let dd = String(getDate).padStart(2, '0');
+        let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        let yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+
+        return today
+    }
+
     if (error) {
         // Print errors if any
         return (
@@ -83,6 +95,60 @@ const PlantPage = () => {
                                 <div className="week" data-id={data.id} key={data.id}>
                                     <div className="week__title">
                                         {index + 1} Неделя:
+                                        <button onClick={function (e) {
+                                            e.preventDefault()
+
+                                            // let newData = JSON.stringify({
+                                            //     data: {
+                                            //         weeks: [
+                                            //             {
+                                            //                 days: [
+                                            //                     {
+                                            //                         date: getDate()
+                                            //                     },
+                                            //                     {
+                                            //                         date: getDate(1)
+                                            //                     },
+                                            //                     {
+                                            //                         date: getDate(2)
+                                            //                     },
+                                            //                     {
+                                            //                         date: getDate(3)
+                                            //                     },
+                                            //                     {
+                                            //                         date: getDate(4)
+                                            //                     },
+                                            //                     {
+                                            //                         date: getDate(5)
+                                            //                     },
+                                            //                     {
+                                            //                         date: getDate(6)
+                                            //                     }
+                                            //                 ]
+                                            //             }
+                                            //         ],
+                                            //     }
+                                            // });
+                                            //
+                                            // let config = {
+                                            //     method: 'put',
+                                            //     url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}`,
+                                            //     headers: {
+                                            //         'Authorization': 'Bearer ' + auth.getToken(),
+                                            //         'Content-Type': 'application/json'
+                                            //     },
+                                            //     data : newData
+                                            // };
+                                            //
+                                            // axios(config)
+                                            //     .then(function (response) {
+                                            //         update()
+                                            //         console.log(JSON.stringify(response.data));
+                                            //     })
+                                            //     .catch(function (error) {
+                                            //         console.log(error);
+                                            //     });
+                                        }}>Добавить 7 дней</button>
                                     </div>
                                     <div className="week__days">
                                         {
