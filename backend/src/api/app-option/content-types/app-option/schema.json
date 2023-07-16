@@ -1,0 +1,18 @@
+{
+  "kind": "singleType",
+  "collectionName": "app_options",
+  "info": {
+    "singularName": "app-option",
+    "pluralName": "app-options",
+    "displayName": "Настройки приложения"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "show_admin_button": {
+      "type": "boolean"
+    }
+  }
+}

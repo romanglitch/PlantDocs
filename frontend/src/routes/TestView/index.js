@@ -3,12 +3,15 @@ import {
     Card,
 } from "antd";
 
+// Components
+import AppCardTitle from "../../components/AppCardTitle";
+
 // Styles
 import './styles.css';
 
 const TestView = () => {
     return (
-        <Card className="app-card card-test" title="Test">
+        <Card className="app-card card-test" title={AppCardTitle('Test')}>
             Test
         </Card>
     );

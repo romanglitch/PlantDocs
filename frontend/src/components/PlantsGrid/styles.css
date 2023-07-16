@@ -19,3 +19,8 @@
 .app-plants-tags span {
     margin-right: 8px;
 }
+
+.app-plant-loader {
+    grid-column: 5 span;
+    padding: 10px 0;
+}

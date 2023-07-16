@@ -24,7 +24,9 @@ const PlantsGrid = () => {
     useEffect(() => {
         axios
             .get(getPlantsRequest)
-            .then(({ data }) => setPlants(data.data))
+            .then(({ data }) => {
+                setPlants(data.data)
+            })
             .catch((error) => setError(error));
     }, [getPlantsRequest]);
 
@@ -65,8 +67,6 @@ const PlantsGrid = () => {
                 .then(({ data }) => setPlants(data.data))
                 .catch((error) => setError(error));
         }
-
-        console.log(getPlantsRequest)
     };
 
     const countDays = (weeksArray, daysCount) => {

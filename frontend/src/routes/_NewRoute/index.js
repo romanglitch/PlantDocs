@@ -1,10 +1,11 @@
 import React from 'react';
+import {Card} from "antd";
 
 // Routes
 // ...
 
 // Components
-// ...
+import AppCardTitle from "../../components/AppCardTitle";
 
 // Styles
 import './styles.css'
@@ -14,7 +15,9 @@ import './styles.css'
 
 const RouteName = () => {
     return (
-        <div className="app-page page-name">view</div>
+        <Card className="app-card card-name" title={AppCardTitle('Title text')}>
+            Test
+        </Card>
     );
 }
 
