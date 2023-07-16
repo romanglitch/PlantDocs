@@ -5,6 +5,6 @@ out
 gen
 
 # Others
-/weed-docs-frontend/
+/weed-docs-frontend/node_modules/
 /backend/node_modules/
 /frontend/node_modules/
