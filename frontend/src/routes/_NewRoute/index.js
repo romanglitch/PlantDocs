@@ -13,7 +13,9 @@ import './styles.css'
 // Functions & variables
 // ...
 
-const RouteName = () => {
+const RouteName = (title) => {
+    document.title = title.title
+
     return (
         <Card className="app-card card-name" title={AppCardTitle('Title text')}>
             Test

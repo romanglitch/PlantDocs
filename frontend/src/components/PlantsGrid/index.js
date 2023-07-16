@@ -28,14 +28,12 @@ const PlantsGrid = () => {
                 setPlants(data.data)
             })
             .catch((error) => setError(error));
-    }, [getPlantsRequest]);
 
-    useEffect(() => {
         axios
             .get(`${process.env.REACT_APP_BACKEND}/api/categories`)
             .then(({ data }) => setCategories(data.data))
             .catch((error) => setError(error));
-    }, []);
+    }, [getPlantsRequest]);
 
     if (error) {
         return <div>Ошибка: {error.message}</div>;
@@ -106,7 +104,6 @@ const PlantsGrid = () => {
                     ))}
                 </div>
             ) : false }
-
             {plants.length ? (
                 <div className="app-plants-grid">
                     {plants.map(({ id, attributes, daysCount=0 }) => (
