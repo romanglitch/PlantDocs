@@ -7,7 +7,7 @@
     "develop": "strapi develop",
     "developadmin": "strapi develop --watch-admin",
     "start": "strapi start",
-    "build": "strapi build",
+    "build": "strapi build1111",
     "strapi": "strapi"
   },
   "dependencies": {

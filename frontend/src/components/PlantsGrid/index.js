@@ -89,7 +89,7 @@ const PlantsGrid = () => {
 
     return (
         <div className="app-plants">
-            {categories.length ? (
+            {categories.length && plants.length ? (
                 <div className="app-plants-tags">
                     <span className="app-plants-tags__title">Категории: </span>
                     {categories.map((tag) => (
