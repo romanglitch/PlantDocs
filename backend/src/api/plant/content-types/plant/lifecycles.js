@@ -63,17 +63,17 @@ module.exports = {
   afterUpdate(event) {
     const { result, params } = event;
 
-    // Write history on update plant
-
-    strapi.entityService.create('api::history.history', {
-      data: {
-        action:'update',
-        content:result,
-        params:params,
-        request:event,
-        plant: result.id,
-        plant_published: !!result.publishedAt,
-      },
-    });
+    if (result.publishedAt) {
+      strapi.entityService.create('api::history.history', {
+        data: {
+          action:'update',
+          content:result,
+          params:params,
+          request:event,
+          plant: result.id,
+          plant_published: !!result.publishedAt,
+        },
+      });
+    }
   }
 }
