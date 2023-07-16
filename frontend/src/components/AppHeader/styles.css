@@ -1,0 +1,25 @@
+.app-header {
+    height: auto;
+    background: #fff;
+    border-bottom: 1px solid #f7f7f7;
+}
+
+.app-header-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.app-header-auth {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+}
+
+.app-header-auth__info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}

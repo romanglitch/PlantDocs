@@ -12,6 +12,9 @@
       "type": "component",
       "repeatable": true,
       "component": "main.day"
+    },
+    "description": {
+      "type": "text"
     }
   }
 }

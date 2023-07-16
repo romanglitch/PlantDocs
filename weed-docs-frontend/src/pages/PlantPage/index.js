@@ -18,20 +18,20 @@ const PlantPage = () => {
 
     const {id} = useParams();
 
-    useEffect(() => {
-        // update update the list of todos
-        // when the component is rendered for the first time
-        update();
-    });
-
-    // This function updates the component with the
-    // current plant data stored in the server
-    function update() {
-        axios
-            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon&populate[1]=categories`)
-            .then(({ data }) => setPlantsPage(data.data.attributes))
-            .catch((error) => setError(error));
-    }
+    // useEffect(() => {
+    //     // update update the list of todos
+    //     // when the component is rendered for the first time
+    //     update();
+    // });
+    //
+    // // This function updates the component with the
+    // // current plant data stored in the server
+    // function update() {
+    //     axios
+    //         .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon&populate[1]=categories`)
+    //         .then(({ data }) => setPlantsPage(data.data.attributes))
+    //         .catch((error) => setError(error));
+    // }
 
     const reformatDate = (dateValue) => {
         let reformated = new Date(dateValue);
@@ -178,7 +178,7 @@ const PlantPage = () => {
 
                                                         axios(config)
                                                             .then(function (response) {
-                                                                update()
+                                                                // update()
                                                                 console.log(JSON.stringify(response.data));
                                                             })
                                                             .catch(function (error) {

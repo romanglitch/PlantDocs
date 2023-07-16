@@ -1,6 +1,6 @@
 module.exports = {
   afterCreate(event) {
-    const { result, params } = event;
+    const { result } = event;
 
     const getDate = (addDays) => {
       let today = new Date();
@@ -47,5 +47,5 @@ module.exports = {
         ],
       },
     });
-  },
+  }
 }

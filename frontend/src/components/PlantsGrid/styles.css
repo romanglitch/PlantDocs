@@ -1,0 +1,21 @@
+.app-plants-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 24px;
+}
+
+.app-plants {
+    display: grid;
+    grid-gap: 20px;
+}
+
+.app-plants-tags {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    user-select: none;
+}
+
+.app-plants-tags span {
+    margin-right: 8px;
+}

@@ -55,7 +55,7 @@ export default function AuthPage() {
                 redirectUser();
             })
             .catch(err => {
-                // TODO handle errors for other views
+                // TODO handle errors for other routes
                 // This is just an example
                 const errors = [
                     { name: 'identifier', errors: [err.response.payload.error.message] },
