@@ -14,14 +14,6 @@
   "attributes": {
     "name": {
       "type": "string"
-    },
-    "icon": {
-      "type": "media",
-      "multiple": false,
-      "required": true,
-      "allowedTypes": [
-        "images"
-      ]
     }
   }
 }

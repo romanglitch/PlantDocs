@@ -24,3 +24,7 @@
     grid-column: 5 span;
     padding: 10px 0;
 }
+
+.app-plant-item {
+    overflow: hidden;
+}

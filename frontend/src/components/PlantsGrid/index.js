@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {Link} from "react-router-dom";
 import axios from "axios";
+import { formatDate, countDays } from "../../publicHelpers";
 import {
     Card,
     Descriptions,
@@ -30,8 +31,18 @@ const PlantsGrid = () => {
             .catch((error) => setError(error));
 
         axios
-            .get(`${process.env.REACT_APP_BACKEND}/api/categories`)
-            .then(({ data }) => setCategories(data.data))
+            .get(`${process.env.REACT_APP_BACKEND}/api/categories?populate[0]=plants`)
+            .then(({ data }) => {
+                data.data.isPlants = false
+
+                data.data.forEach(function (item) {
+                    if (item.attributes.plants.data.length) {
+                        data.data.isPlants = true
+                    }
+                })
+
+                setCategories(data.data)
+            })
             .catch((error) => setError(error));
     }, [getPlantsRequest]);
 
@@ -67,31 +78,10 @@ const PlantsGrid = () => {
         }
     };
 
-    const countDays = (weeksArray, daysCount) => {
-        weeksArray.forEach(function (data) {
-            daysCount = daysCount + data.days.length
-        })
-
-        return daysCount
-    }
-
-    const formatDate = (date) => {
-        let formatedDate = new Date(date);
-        let getDate = formatedDate.getDate();
-        let dd = String(getDate).padStart(2, '0');
-        let mm = String(formatedDate.getMonth() + 1).padStart(2, '0'); //January is 0!
-        let yyyy = formatedDate.getFullYear();
-
-        formatedDate = `${dd}/${mm}/${yyyy}`
-
-        return formatedDate
-    }
-
     return (
         <div className="app-plants">
-            {categories.length && plants.length ? (
+            {categories.isPlants ? (
                 <div className="app-plants-tags">
-                    <span className="app-plants-tags__title">Категории: </span>
                     {categories.map((tag) => (
                         <CheckableTag
                             key={tag.id}
@@ -106,12 +96,12 @@ const PlantsGrid = () => {
             ) : false }
             {plants.length ? (
                 <div className="app-plants-grid">
-                    {plants.map(({ id, attributes, daysCount=0 }) => (
+                    {plants.map(({ id, attributes }) => (
                         <Link className="app-plant-item" key={id} to={'/plants/' + id}>
                             <Card className="app-plant-item__card" title={attributes.Name}>
                                 <Descriptions className="app-plant-item__descriptions" size={'small'} column={1}>
                                     <Descriptions.Item className="app-plant-item__descriptions-item" label="Дней">
-                                        {countDays(attributes.weeks, daysCount)}
+                                        {countDays(attributes.weeks)}
                                     </Descriptions.Item>
                                     <Descriptions.Item className="app-plant-item__descriptions-item" label="Категории">
                                         {
