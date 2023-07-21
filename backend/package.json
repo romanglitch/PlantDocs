@@ -7,14 +7,14 @@
     "develop": "strapi develop",
     "developadmin": "strapi develop --watch-admin",
     "start": "strapi start",
-    "build": "strapi build1111",
+    "build": "strapi build",
     "strapi": "strapi"
   },
   "dependencies": {
     "@palmabit/strapi-app-version": "^1.1.0",
-    "@strapi/plugin-i18n": "4.11.4",
-    "@strapi/plugin-users-permissions": "4.11.4",
-    "@strapi/strapi": "4.11.4",
+    "@strapi/plugin-i18n": "4.11.7",
+    "@strapi/plugin-users-permissions": "4.11.7",
+    "@strapi/strapi": "4.11.7",
     "better-sqlite3": "8.0.1"
   },
   "author": {

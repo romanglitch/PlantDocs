@@ -1,0 +1,39 @@
+.card-plant-tabs .ant-tabs-tab {
+    padding-top: 0;
+}
+
+.card-plant-tabs__weeks {
+    display: grid;
+    grid-gap: 30px;
+}
+
+.week {
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.week__title {
+    font-size: 18px;
+    font-weight: 500;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+}
+
+.week__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-gap: 25px;
+}
+
+.day {
+    border: 1px solid #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.popover-content {
+    display: grid;
+    grid-gap: 10px;
+}

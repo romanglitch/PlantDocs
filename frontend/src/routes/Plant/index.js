@@ -2,9 +2,11 @@ import React from 'react';
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider } from "antd";
+import { Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider, Popover, Select, Popconfirm } from "antd";
 import { SmileOutlined, CalendarOutlined } from '@ant-design/icons';
 import { formatDate, countDays } from "../../publicHelpers";
+
+import { AUTH_TOKEN } from "../../constant";
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
@@ -19,21 +21,26 @@ dayjs.locale('ru-ru');
 
 const { Title } = Typography;
 
-const PlantPage = () => {
+const Plant = () => {
     const [plantPage, setPlantPage] = useState([]);
+    const [tags, setTags] = useState([]);
     const [history, setHistory] = useState([]);
-
     const {id} = useParams();
 
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days`)
+            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`)
             .then(({ data }) => setPlantPage(data.data.attributes))
             .catch((error) => console.log(error));
 
         axios
             .get(`${process.env.REACT_APP_BACKEND}/api/histories?populate[0]=plant&filters[plant]=${id}`)
             .then(({ data }) => setHistory(data.data))
+            .catch((error) => console.log(error));
+
+        axios
+            .get(`${process.env.REACT_APP_BACKEND}/api/tags`)
+            .then(({ data }) => setTags(data.data))
             .catch((error) => console.log(error));
     }, [id]);
 
@@ -71,7 +78,6 @@ const PlantPage = () => {
                                 </li>
                             )
                         }
-
                         return false
                     })
                 }
@@ -83,6 +89,108 @@ const PlantPage = () => {
         if (info.type === 'date') return dateCellRender(current);
         return false;
     };
+
+    const DeleteDayButton = (data) => {
+        let onClickEvent = (e) => {
+            e.preventDefault()
+
+            const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
+            const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
+            const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
+
+            const {weeks} = plantPage
+            delete weeks[weekIndex].days[dayIndex]
+
+            // Remove empty values
+            weeks[weekIndex].days = weeks[weekIndex].days.filter(n => n)
+
+            axios
+                .put(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`, {
+                    headers: {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    data: {
+                        weeks: weeks
+                    }
+                })
+                .then((response) => {
+                    console.log(response);
+                    setPlantPage(response.data.data.attributes)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        return (
+            <Popconfirm
+                title="Удалить день ?"
+                onConfirm={onClickEvent}
+                onCancel={false}
+                okText="Да"
+                cancelText="Нет"
+            >
+                <button>Удалить день</button>
+            </Popconfirm>
+        )
+    }
+
+    const SelectTags = (data) => {
+        const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
+        const dayObject = weekObject.days.find(item => item.id === data.dayId);
+
+        let onChangeEvent = (values) => {
+            const {weeks} = plantPage
+
+            dayObject.tags = values
+
+            axios
+                .put(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`, {
+                    headers: {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    data: {
+                        weeks: weeks
+                    }
+                })
+                .then((response) => {
+                    console.log(response);
+                    setPlantPage(response.data.data.attributes)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        const selectOptions = [];
+
+        tags.forEach(function (tagItem) {
+            selectOptions.push({
+                label: tagItem.attributes.name,
+                value: tagItem.id,
+            });
+        })
+
+        const defaultOptions = []
+
+        dayObject.tags.data.forEach(function (tagItem) {
+            defaultOptions.push(tagItem.id);
+        })
+
+        return (
+            <Select
+                mode="multiple"
+                allowClear
+                style={{
+                    width: '320px',
+                }}
+                placeholder="Теги"
+                defaultValue={defaultOptions}
+                onChange={onChangeEvent}
+                options={selectOptions}
+            />
+        )
+    }
 
     return (
         <Card className="app-card card-plant" title={AppCardTitle(plantPage.Name)}>
@@ -120,7 +228,7 @@ const PlantPage = () => {
                                     </Descriptions.Item>
                                 </Descriptions>
                                 <Title level={5}>Описание: </Title>
-                                <div className="card-plant-tabs__weeks">
+                                <div className="card-plant-tabs__content">
                                     {plantPage.Content}
                                 </div>
                                 <Divider/>
@@ -128,14 +236,14 @@ const PlantPage = () => {
                                 <div className="card-plant-tabs__weeks">
                                     {plantPage.weeks ? (
                                         plantPage.weeks.map((data, index) => (
-                                            <div className="week" data-id={data.id} key={data.id}>
+                                            <div className="week" key={data.id}>
                                                 <div className="week__title">
                                                     {index + 1} Неделя:
                                                 </div>
                                                 <div className="week__days">
                                                     {
                                                         data.days.map((days_data, index) => (
-                                                            <div className={days_data.passed ? 'day --passed' : 'day'} data-id={days_data.id} key={days_data.id}>
+                                                            <div className={days_data.passed ? 'day --passed' : 'day'} key={days_data.id}>
                                                                 <div className="day__title">
                                                                     ({index + 1} день)
                                                                 </div>
@@ -144,17 +252,20 @@ const PlantPage = () => {
                                                                         formatDate(days_data.date)
                                                                     }
                                                                 </div>
-                                                                <div className="day__tags">
-                                                                    {days_data.tags ? (
-                                                                        days_data.tags.data.map((tags_data) => (
-                                                                            <div className="tag" data-id={tags_data.id} key={tags_data.id}>
-                                                                                <div className="tag__name">
-                                                                                    {tags_data.attributes.name}
-                                                                                </div>
+                                                                <Popover
+                                                                    trigger="click"
+                                                                    placement="bottom"
+                                                                    content={
+                                                                        (
+                                                                            <div className={'popover-content'}>
+                                                                                <DeleteDayButton weekId={data.id} dayId={days_data.id} />
+                                                                                <SelectTags weekId={data.id} dayId={days_data.id} />
                                                                             </div>
-                                                                        ))
-                                                                    ) : false}
-                                                                </div>
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <button>Действия</button>
+                                                                </Popover>
                                                             </div>
                                                         ))
                                                     }
@@ -186,4 +297,4 @@ const PlantPage = () => {
     );
 }
 
-export default PlantPage;
+export default Plant;

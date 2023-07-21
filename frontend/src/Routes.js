@@ -4,7 +4,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 // Routes
 import SignIn from "./routes/SignIn";
 import Home from './routes/Home';
-import PlantPage from "./routes/PlantPage";
+import Plant from "./routes/Plant";
+import Error from "./routes/Error";
 import TestView from './routes/TestView';
 
 // Helpers
@@ -19,13 +20,14 @@ const AppRoutes = () => {
             />
             <Route
                 path="/plants/:id"
-                element={getToken() ? <PlantPage /> : <Navigate to="/signin" />}
+                element={getToken() ? <Plant /> : <Navigate to="/signin" />}
             />
             <Route
                 path="/test"
                 element={getToken() ? <TestView /> : <Navigate to="/signin" />}
             />
             <Route path="/signin" element={<SignIn />} />
+            <Route path="*" element={<Error/>}/>
         </Routes>
     );
 };

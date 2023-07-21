@@ -124,7 +124,7 @@ const PlantsGrid = () => {
                         </Link>
                     ))}
                 </div>
-            ) : false }
+            ) : 'Растения не найдены' }
         </div>
     );
 }
