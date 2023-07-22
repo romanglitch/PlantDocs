@@ -17,7 +17,6 @@ module.exports = {
     // Add first week and first 7 days
     strapi.entityService.update('api::plant.plant', result.id, {
       data: {
-        Name: result.Name + '(1 week / 7 days added)',
         weeks: [
           {
             days: [

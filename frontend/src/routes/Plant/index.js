@@ -1,12 +1,13 @@
 import React from 'react';
 import { useEffect, useState } from "react";
+import ReactMarkdown from 'react-markdown'
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider, Popover, Select, Popconfirm } from "antd";
-import { SmileOutlined, CalendarOutlined } from '@ant-design/icons';
+import { getToken } from "../../helpers";
 import { formatDate, countDays } from "../../publicHelpers";
 
-import { AUTH_TOKEN } from "../../constant";
+import { Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider, Popover, Select, Popconfirm, Input, InputNumber, message } from "antd";
+import { SmileOutlined, CalendarOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
@@ -25,6 +26,9 @@ const Plant = () => {
     const [plantPage, setPlantPage] = useState([]);
     const [tags, setTags] = useState([]);
     const [history, setHistory] = useState([]);
+
+    const [messageApi, contextHolder] = message.useMessage();
+
     const {id} = useParams();
 
     useEffect(() => {
@@ -119,21 +123,22 @@ const Plant = () => {
             thisDayElement.classList.add('--deleted')
 
             setTimeout(() => {
-                axios
-                    .put(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`, {
-                        headers: {
-                            'Authorization': `Bearer ${AUTH_TOKEN}`
-                        },
+                axios({
+                    method: 'put',
+                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    },
+                    data: {
                         data: {
                             weeks: weeks
                         }
-                    })
-                    .then((response) => {
-                        setPlantPage(response.data.data.attributes)
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+                    }
+                }).then(function (response) {
+                    setPlantPage(response.data.data.attributes)
+                }).catch(function (error) {
+                    console.log(error);
+                });
             }, 1000);
         }
 
@@ -158,21 +163,22 @@ const Plant = () => {
             const {weeks} = plantPage
             dayObject.tags = values
 
-            axios
-                .put(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`, {
-                    headers: {
-                        'Authorization': `Bearer ${AUTH_TOKEN}`
-                    },
+            axios({
+                method: 'put',
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
                     data: {
                         weeks: weeks
                     }
-                })
-                .then((response) => {
-                    setPlantPage(response.data.data.attributes)
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
+            }).catch(function (error) {
+                console.log(error);
+            });
         }
 
         const selectOptions = [];
@@ -191,19 +197,379 @@ const Plant = () => {
         })
 
         return (
-            <Select
-                mode="multiple"
-                allowClear
-                style={{
-                    width: '320px',
-                }}
-                placeholder="Теги"
-                defaultValue={defaultOptions}
-                onChange={onChangeEvent}
-                options={selectOptions}
-            />
+            <>
+                {contextHolder}
+                <Select
+                    mode="multiple"
+                    allowClear
+                    style={{
+                        width: '320px',
+                    }}
+                    placeholder="Теги"
+                    defaultValue={defaultOptions}
+                    onChange={onChangeEvent}
+                    options={selectOptions}
+                />
+            </>
         )
     }
+
+    const PassDayButton = (data) => {
+        let onClickEvent = (e) => {
+            e.preventDefault()
+
+            const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
+            const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
+            const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
+
+            const {weeks} = plantPage
+
+            weeks[weekIndex].days[dayIndex].passed = true
+
+            axios({
+                method: 'put',
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
+                    data: {
+                        weeks: weeks
+                    }
+                }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+        return (
+            <button onClick={onClickEvent}>Закрыть день</button>
+        )
+    }
+
+    const EditHumidity = (data) => {
+        const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
+        const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
+        const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
+
+        const {weeks} = plantPage
+
+        let onBlurEvent = (e) => {
+            if (weeks[weekIndex].days[dayIndex].humidity !== e.target.value) {
+                weeks[weekIndex].days[dayIndex].humidity = e.target.value
+
+                setTimeout(function () {
+                    axios({
+                        method: 'put',
+                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                        headers: {
+                            'Authorization': `Bearer ${getToken()}`
+                        },
+                        data: {
+                            data: {
+                                weeks: weeks
+                            }
+                        }
+                    }).then(function (response) {
+                        setPlantPage(response.data.data.attributes)
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+
+                    messageApi.info('Влажность обновлена')
+                }, 1000)
+            }
+        }
+
+        return (
+            <>
+                {contextHolder}
+                <InputNumber onBlur={onBlurEvent} addonAfter="%" min={0} max={100} defaultValue={weeks[weekIndex].days[dayIndex].humidity ? weeks[weekIndex].days[dayIndex].humidity : 0} />
+            </>
+        )
+    }
+
+    const DayDescription = (data) => {
+        const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
+        const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
+        const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
+
+        const {weeks} = plantPage
+
+        let onBlurEvent = (e) => {
+            if (weeks[weekIndex].days[dayIndex].description !== e.target.value) {
+                weeks[weekIndex].days[dayIndex].description = e.target.value
+
+                setTimeout(function () {
+                    axios({
+                        method: 'put',
+                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                        headers: {
+                            'Authorization': `Bearer ${getToken()}`
+                        },
+                        data: {
+                            data: {
+                                weeks: weeks
+                            }
+                        }
+                    }).then(function (response) {
+                        setPlantPage(response.data.data.attributes)
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+
+                    messageApi.info('Описание обновлено')
+                }, 1000)
+            }
+        }
+
+        return (
+            <>
+                {contextHolder}
+                <Input onBlur={onBlurEvent} defaultValue={weeks[weekIndex].days[dayIndex].description} placeholder="Описание дня" />
+            </>
+        )
+    }
+
+    const WeekDescription = (data) => {
+        const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
+
+        const {weeks} = plantPage
+
+        let onBlurEvent = (e) => {
+            if (weeks[weekIndex].description !== e.target.value) {
+                weeks[weekIndex].description = e.target.value
+
+                setTimeout(function () {
+                    axios({
+                        method: 'put',
+                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                        headers: {
+                            'Authorization': `Bearer ${getToken()}`
+                        },
+                        data: {
+                            data: {
+                                weeks: weeks
+                            }
+                        }
+                    }).then(function (response) {
+                        setPlantPage(response.data.data.attributes)
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+
+                    messageApi.info('Описание недели обновлено')
+                }, 1000)
+            }
+        }
+
+        return (
+            <>
+                {contextHolder}
+                <Input onBlur={onBlurEvent} defaultValue={weeks[weekIndex].description} addonBefore="Описание недели" placeholder="Описание недели" />
+            </>
+        )
+    };
+
+    const AddWeekButton = () => {
+        const {weeks} = plantPage
+
+        const onClickEvent = (e) => {
+            const newDaysDate = (addDaysNumber) => {
+                const lastWeekDays = weeks[weeks.length - 1].days
+                const lastDayDate = new Date(lastWeekDays[lastWeekDays.length - 1].date)
+
+                lastDayDate.setDate(lastDayDate.getDate() + addDaysNumber)
+
+                // returned format date: 2023-07-28
+                return lastDayDate.toISOString().split('T')[0]
+            }
+
+            weeks.push({
+                days: [
+                    {
+                        date: newDaysDate(1)
+                    },
+                    {
+                        date: newDaysDate(2)
+                    },
+                    {
+                        date: newDaysDate(3)
+                    },
+                    {
+                        date: newDaysDate(4)
+                    },
+                    {
+                        date: newDaysDate(5)
+                    },
+                    {
+                        date: newDaysDate(6)
+                    },
+                    {
+                        date: newDaysDate(7)
+                    }
+                ]
+            })
+
+            axios({
+                method: 'put',
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
+                    data: {
+                        weeks: weeks
+                    }
+                }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+        return (
+            <>
+                <button className="test-btn" onClick={onClickEvent}>
+                    Добавить новую неделю
+                </button>
+            </>
+        )
+    };
+
+    const AddOneDayButton = (data) => {
+        const {weeks} = plantPage
+
+        const onClickEvent = (e) => {
+            const newDaysDate = (addDaysNumber) => {
+                const lastWeekDays = weeks[weeks.length - 1].days
+                const lastDayDate = new Date(lastWeekDays[lastWeekDays.length - 1].date)
+
+                lastDayDate.setDate(lastDayDate.getDate() + addDaysNumber)
+
+                // returned format date: 2023-07-28
+                return lastDayDate.toISOString().split('T')[0]
+            }
+
+            weeks[data.weekIndex].days.push({
+                date: newDaysDate(1)
+            })
+
+            axios({
+                method: 'put',
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
+                    data: {
+                        weeks: weeks
+                    }
+                }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+        return (
+            <>
+                <button className="test-btn" onClick={onClickEvent}>
+                    Добавить 1 день
+                </button>
+            </>
+        )
+    };
+
+    const AddSevenDaysButton = (data) => {
+        const {weeks} = plantPage
+
+        const onClickEvent = (e) => {
+            const newDaysDate = (addDaysNumber) => {
+                const lastWeekDays = weeks[weeks.length - 1].days
+                const lastDayDate = new Date(lastWeekDays[lastWeekDays.length - 1].date)
+
+                lastDayDate.setDate(lastDayDate.getDate() + addDaysNumber)
+
+                // returned format date: 2023-07-28
+                return lastDayDate.toISOString().split('T')[0]
+            }
+
+            weeks[data.weekIndex].days.push(
+                {
+                    date: newDaysDate(1)
+                },
+                {
+                    date: newDaysDate(2)
+                },
+                {
+                    date: newDaysDate(3)
+                },
+                {
+                    date: newDaysDate(4)
+                },
+                {
+                    date: newDaysDate(5)
+                },
+                {
+                    date: newDaysDate(6)
+                },
+                {
+                    date: newDaysDate(7)
+                })
+
+            axios({
+                method: 'put',
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
+                    data: {
+                        weeks: weeks
+                    }
+                }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+        return (
+            <>
+                <button className="test-btn" onClick={onClickEvent}>
+                    Добавить 7 дней
+                </button>
+            </>
+        )
+    };
+
+    const DayIndex = (data) => {
+        const {weeks} = plantPage
+
+        let daysArray = []
+
+        weeks.forEach(function (weekItem) {
+            weekItem.days.forEach(function (dayItem) {
+                daysArray.push(dayItem)
+            })
+        })
+
+        const dayIndex = daysArray.findIndex(item => item.id === data.thisDayId);
+
+        return (
+            <h4>
+                {dayIndex + 1} День
+            </h4>
+        )
+    };
+
+    // !TODO: Вовод в календарь информацию о дне
 
     return (
         <Card className="app-card card-plant" title={AppCardTitle(plantPage.Name)}>
@@ -241,8 +607,23 @@ const Plant = () => {
                                     </Descriptions.Item>
                                 </Descriptions>
                                 <Title level={5}>Описание: </Title>
-                                <div className="card-plant-tabs__content">
-                                    {plantPage.Content}
+                                <div className="card-plant-tabs__plant-content">
+                                    <ReactMarkdown
+                                        transformImageUri={
+                                            function (src) {
+                                                src = `${process.env.REACT_APP_BACKEND}${src}`
+                                                return src
+                                            }
+                                        }
+                                        transformLinkUri={
+                                            function (href) {
+                                                href = `${process.env.REACT_APP_BACKEND}${href}`
+                                                return href
+                                            }
+                                        }
+                                    >
+                                        {plantPage.Content}
+                                    </ReactMarkdown>
                                 </div>
                                 <Divider/>
                                 <Title level={5}>Блоки недель: </Title>
@@ -253,35 +634,48 @@ const Plant = () => {
                                                 <div className="week__title">
                                                     {index + 1} Неделя:
                                                 </div>
+                                                <div className="week__description">
+                                                    <WeekDescription weekId={data.id} />
+                                                </div>
                                                 <div className="week__days">
                                                     {
-                                                        data.days.map((days_data, index) => (
+                                                        data.days.map((days_data, dayIndex) => (
                                                             <Popover
                                                                 trigger="click"
                                                                 placement="top"
                                                                 key={days_data.id}
-                                                                content={
+                                                                content={!days_data.passed ?
                                                                     (
                                                                         <div className={'popover-content'}>
-                                                                            <DeleteDayButton weekId={data.id} dayId={days_data.id} />
+                                                                            <PassDayButton weekId={data.id} dayId={days_data.id} />
+                                                                            {/* If this week is last */}
+                                                                            {(index + 1) === plantPage.weeks.length ? (
+                                                                                <DeleteDayButton weekId={data.id} dayId={days_data.id} />
+                                                                            ) : false }
                                                                             <SelectTags weekId={data.id} dayId={days_data.id} />
+                                                                            <EditHumidity weekId={data.id} dayId={days_data.id} />
+                                                                            <DayDescription weekId={data.id} dayId={days_data.id} />
                                                                         </div>
-                                                                    )
+                                                                    ) : null
                                                                 }
                                                             >
                                                                 <div className={days_data.passed ? 'day --passed' : 'day'}>
                                                                     <div className="day__title">
-                                                                        ({index + 1} день)
+                                                                        <DayIndex thisDayIndex={dayIndex} thisDayId={days_data.id} thisWeekIndex={index}/>
                                                                     </div>
                                                                     <div className="day__date">
                                                                         {
                                                                             formatDate(days_data.date)
                                                                         }
                                                                     </div>
+                                                                    <div className="day__humidity">
+                                                                        {days_data.humidity ? `Влажность: ${days_data.humidity}%` : `Влажность: 0%`}
+                                                                    </div>
                                                                     <div className="day__tags">
+                                                                        Теги:
                                                                         {days_data.tags ? (
                                                                             days_data.tags.data.map((tags_data) => (
-                                                                                <div className="tag" data-id={tags_data.id} key={tags_data.id}>
+                                                                                <div className="tag" key={tags_data.id}>
                                                                                     <div className="tag__name">
                                                                                         {tags_data.attributes.name}
                                                                                     </div>
@@ -289,15 +683,26 @@ const Plant = () => {
                                                                             ))
                                                                         ) : false}
                                                                     </div>
+                                                                    <div className="day__description">
+                                                                        {days_data.description ? `Описание: ${days_data.description}` : `Описание: отсутствует`}
+                                                                    </div>
                                                                 </div>
                                                             </Popover>
                                                         ))
                                                     }
                                                 </div>
+                                                {/* If this week is last */}
+                                                {(index + 1) === plantPage.weeks.length ? (
+                                                    <>
+                                                        <AddOneDayButton weekIndex={index} />
+                                                        <AddSevenDaysButton weekIndex={index} />
+                                                    </>
+                                                ) : false }
                                             </div>
                                         ))
                                     ) : false}
                                 </div>
+                                <AddWeekButton />
                             </div>
                         ),
                     },

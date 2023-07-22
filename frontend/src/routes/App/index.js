@@ -3,7 +3,7 @@ import { ConfigProvider, Layout } from "antd";
 import ruRU from 'antd/locale/ru_RU';
 
 // Routes
-import AppRoutes from "../../Routes";
+import AppRoutes from "../../routes";
 
 // Components
 import AppHeader from "../../components/AppHeader";

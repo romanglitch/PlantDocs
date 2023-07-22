@@ -19,7 +19,7 @@ const AuthProvider = ({ children }) => {
     const fetchLoggedInUser = async (token) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${API}/users/me`, {
+            const response = await fetch(`${API}/users/me?populate=*`, {
                 headers: { Authorization: `${BEARER} ${token}` },
             });
             const data = await response.json();

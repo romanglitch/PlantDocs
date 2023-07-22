@@ -21,7 +21,9 @@
       "default": false
     },
     "humidity": {
-      "type": "integer"
+      "type": "integer",
+      "max": 100,
+      "min": 0
     },
     "description": {
       "type": "string"

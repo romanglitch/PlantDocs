@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
     Card,
 } from "antd";
@@ -12,7 +13,7 @@ import './styles.css';
 const TestView = () => {
     return (
         <Card className="app-card card-test" title={AppCardTitle('Test')}>
-            Test
+            test
         </Card>
     );
 }

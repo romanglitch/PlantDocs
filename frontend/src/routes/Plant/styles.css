@@ -58,3 +58,27 @@
             0 5px 20px 6px rgb(0 0 0 / 8%),
             inset 0 0 0 2px #ef1b1b;
 }
+
+.day.--passed {
+    background: #21d388;
+    color: #fff;
+    border-color: #21d388;
+    font-weight: 500;
+    cursor: default;
+    pointer-events: none;
+}
+
+.week__description {
+    margin-bottom: 20px;
+}
+
+.test-btn {
+    padding: 10px;
+    margin: 10px auto 0;
+    width: max-content;
+    display: block;
+    background: #ddd;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
