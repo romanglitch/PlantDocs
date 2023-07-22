@@ -32,6 +32,9 @@
     "plant_published": {
       "type": "boolean",
       "default": false
+    },
+    "action_name": {
+      "type": "string"
     }
   }
 }

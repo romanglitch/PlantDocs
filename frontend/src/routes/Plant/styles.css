@@ -25,15 +25,36 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-gap: 25px;
+    transition: all .33s ease;
 }
 
 .day {
     border: 1px solid #f0f0f0;
     padding: 20px;
     border-radius: 8px;
+    cursor: pointer;
+    display: grid;
+    grid-gap: 10px;
+    align-content: flex-start;
+    transition: all .33s ease;
+}
+
+.day > *:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
 }
 
 .popover-content {
     display: grid;
     grid-gap: 10px;
+}
+
+.day.ant-popover-open {
+    box-shadow: 0 5px 20px 6px rgb(0 0 0 / 8%);
+}
+
+.day.--deleted {
+    box-shadow:
+            0 5px 20px 6px rgb(0 0 0 / 8%),
+            inset 0 0 0 2px #ef1b1b;
 }

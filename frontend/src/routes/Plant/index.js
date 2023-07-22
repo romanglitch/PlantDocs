@@ -60,13 +60,22 @@ const Plant = () => {
 
                             switch (item.attributes.action) {
                                 case 'create':
-                                    actionString = 'Растение создано'
+                                    actionString = {
+                                        text: 'Растение создано',
+                                        status: 'warning'
+                                    }
                                     break;
                                 case 'update':
-                                    actionString = 'Растение обновлено'
+                                    actionString = {
+                                        text: 'Растение обновлено',
+                                        status: 'warning'
+                                    }
                                     break;
                                 case 'other case value':
-                                    actionString = '...'
+                                    actionString = {
+                                        text: 'Название',
+                                        status: 'success'
+                                    }
                                     break;
                                 default:
                                     actionString = 'Неизвестное действие'
@@ -74,16 +83,17 @@ const Plant = () => {
 
                             return (
                                 <li key={item.id}>
-                                    <Badge status={item.attributes.action === 'update' ? 'warning' : 'success'} text={actionString} />
+                                    <Badge status={actionString.status} text={actionString.text} />
                                 </li>
                             )
+                        } else {
+                            return false
                         }
-                        return false
                     })
                 }
             </ul>
-        );
-    };
+        )
+    }
 
     const cellRender = (current, info) => {
         if (info.type === 'date') return dateCellRender(current);
@@ -104,29 +114,34 @@ const Plant = () => {
             // Remove empty values
             weeks[weekIndex].days = weeks[weekIndex].days.filter(n => n)
 
-            axios
-                .put(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`, {
-                    headers: {
-                        'Authorization': `Bearer ${AUTH_TOKEN}`
-                    },
-                    data: {
-                        weeks: weeks
-                    }
-                })
-                .then((response) => {
-                    console.log(response);
-                    setPlantPage(response.data.data.attributes)
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            const thisDayElement = document.querySelectorAll('.week')[weekIndex].getElementsByClassName('day')[dayIndex]
+
+            thisDayElement.classList.add('--deleted')
+
+            setTimeout(() => {
+                axios
+                    .put(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`, {
+                        headers: {
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        },
+                        data: {
+                            weeks: weeks
+                        }
+                    })
+                    .then((response) => {
+                        setPlantPage(response.data.data.attributes)
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }, 1000);
         }
 
         return (
             <Popconfirm
                 title="Удалить день ?"
                 onConfirm={onClickEvent}
-                onCancel={false}
+                onCancel={e => e.preventDefault()}
                 okText="Да"
                 cancelText="Нет"
             >
@@ -141,7 +156,6 @@ const Plant = () => {
 
         let onChangeEvent = (values) => {
             const {weeks} = plantPage
-
             dayObject.tags = values
 
             axios
@@ -154,7 +168,6 @@ const Plant = () => {
                     }
                 })
                 .then((response) => {
-                    console.log(response);
                     setPlantPage(response.data.data.attributes)
                 })
                 .catch(function (error) {
@@ -243,30 +256,41 @@ const Plant = () => {
                                                 <div className="week__days">
                                                     {
                                                         data.days.map((days_data, index) => (
-                                                            <div className={days_data.passed ? 'day --passed' : 'day'} key={days_data.id}>
-                                                                <div className="day__title">
-                                                                    ({index + 1} день)
+                                                            <Popover
+                                                                trigger="click"
+                                                                placement="top"
+                                                                key={days_data.id}
+                                                                content={
+                                                                    (
+                                                                        <div className={'popover-content'}>
+                                                                            <DeleteDayButton weekId={data.id} dayId={days_data.id} />
+                                                                            <SelectTags weekId={data.id} dayId={days_data.id} />
+                                                                        </div>
+                                                                    )
+                                                                }
+                                                            >
+                                                                <div className={days_data.passed ? 'day --passed' : 'day'}>
+                                                                    <div className="day__title">
+                                                                        ({index + 1} день)
+                                                                    </div>
+                                                                    <div className="day__date">
+                                                                        {
+                                                                            formatDate(days_data.date)
+                                                                        }
+                                                                    </div>
+                                                                    <div className="day__tags">
+                                                                        {days_data.tags ? (
+                                                                            days_data.tags.data.map((tags_data) => (
+                                                                                <div className="tag" data-id={tags_data.id} key={tags_data.id}>
+                                                                                    <div className="tag__name">
+                                                                                        {tags_data.attributes.name}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))
+                                                                        ) : false}
+                                                                    </div>
                                                                 </div>
-                                                                <div className="day__date">
-                                                                    {
-                                                                        formatDate(days_data.date)
-                                                                    }
-                                                                </div>
-                                                                <Popover
-                                                                    trigger="click"
-                                                                    placement="bottom"
-                                                                    content={
-                                                                        (
-                                                                            <div className={'popover-content'}>
-                                                                                <DeleteDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                <SelectTags weekId={data.id} dayId={days_data.id} />
-                                                                            </div>
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <button>Действия</button>
-                                                                </Popover>
-                                                            </div>
+                                                            </Popover>
                                                         ))
                                                     }
                                                 </div>
