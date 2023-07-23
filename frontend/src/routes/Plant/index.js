@@ -49,52 +49,80 @@ const Plant = () => {
     }, [id]);
 
     const dateCellRender = (value) => {
+        const {weeks} = plantPage
+
         return (
             <ul className="events">
-                {
-                    history.map((item) => {
-                        const hDate = dayjs(item.attributes.createdAt);
-                        const cDate = value;
+                <>
+                    {
+                        history.map((item) => {
+                            const hDate = dayjs(item.attributes.createdAt);
+                            const cDate = value;
 
-                        let cDateString = `${cDate.$D}/${cDate.$M}/${cDate.$y}`
-                        let hDateString = `${hDate.$D}/${hDate.$M}/${hDate.$y}`
+                            let cDateString = `${cDate.$D}/${cDate.$M}/${cDate.$y}`
+                            let hDateString = `${hDate.$D}/${hDate.$M}/${hDate.$y}`
 
-                        if (cDateString === hDateString) {
-                            let actionString = null
+                            if (cDateString === hDateString) {
+                                let actionString = null
 
-                            switch (item.attributes.action) {
-                                case 'create':
-                                    actionString = {
-                                        text: 'Растение создано',
-                                        status: 'warning'
-                                    }
-                                    break;
-                                case 'update':
-                                    actionString = {
-                                        text: 'Растение обновлено',
-                                        status: 'warning'
-                                    }
-                                    break;
-                                case 'other case value':
-                                    actionString = {
-                                        text: 'Название',
-                                        status: 'success'
-                                    }
-                                    break;
-                                default:
-                                    actionString = 'Неизвестное действие'
+                                switch (item.attributes.action) {
+                                    case 'create':
+                                        actionString = {
+                                            text: 'Растение создано',
+                                            status: 'warning'
+                                        }
+                                        break;
+                                    case 'update':
+                                        actionString = {
+                                            text: 'Растение обновлено',
+                                            status: 'warning'
+                                        }
+                                        break;
+                                    case 'other case value':
+                                        actionString = {
+                                            text: 'Название',
+                                            status: 'success'
+                                        }
+                                        break;
+                                    default:
+                                        actionString = 'Неизвестное действие'
+                                }
+
+                                return (
+                                    <li key={item.id}>
+                                        <Badge status={actionString.status} text={actionString.text} />
+                                    </li>
+                                )
+                            } else {
+                                return false
+                            }
+                        })
+                    }
+                </>
+                <>
+                    {
+                        weeks.map(function (weekItem) {
+                            const dayId = weekItem.days.findIndex(x => x.date === value.toISOString().split('T')[0])
+                            const dayItem = weekItem.days[dayId]
+
+                            if (dayItem) {
+                                return (
+                                    <li className="calendar-day-info" key={dayItem.id}>
+                                        {dayItem.humidity ? (<Badge status={'success'} text={'Влажность: ' + dayItem.humidity + '%'} />) : false}
+                                        {dayItem.description ? (<Badge status={'success'} text={dayItem.description} />) : false}
+                                        {dayItem.tags.data.length ? dayItem.tags.data.map((tagItem) => {
+                                            return (
+                                                <Badge key={tagItem.id} status={'default'} text={tagItem.attributes.name} />
+                                            )
+                                        }) : false }
+                                    </li>
+                                )
                             }
 
-                            return (
-                                <li key={item.id}>
-                                    <Badge status={actionString.status} text={actionString.text} />
-                                </li>
-                            )
-                        } else {
                             return false
-                        }
-                    })
-                }
+                        })
+                    }
+                </>
             </ul>
         )
     }
@@ -716,7 +744,7 @@ const Plant = () => {
                         ),
                         children: (
                             <div className="card-plant-tabs__content">
-                                <Calendar cellRender={cellRender} />
+                                <Calendar className="card-plant-tabs__calendar" cellRender={cellRender} />
                             </div>
                         ),
                     },

@@ -21,7 +21,7 @@ const App = () => {
             theme={{
                 token: {
                     colorPrimary: '#21D388',
-                },
+                }
             }}
         >
             <Layout className="app-layout">
