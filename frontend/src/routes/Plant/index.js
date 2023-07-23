@@ -25,7 +25,6 @@ const { Title } = Typography;
 const Plant = () => {
     const [plantPage, setPlantPage] = useState([]);
     const [tags, setTags] = useState([]);
-    const [history, setHistory] = useState([]);
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -35,11 +34,6 @@ const Plant = () => {
         axios
             .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`)
             .then(({ data }) => setPlantPage(data.data.attributes))
-            .catch((error) => console.log(error));
-
-        axios
-            .get(`${process.env.REACT_APP_BACKEND}/api/histories?populate[0]=plant&filters[plant]=${id}`)
-            .then(({ data }) => setHistory(data.data))
             .catch((error) => console.log(error));
 
         axios
@@ -53,52 +47,6 @@ const Plant = () => {
 
         return (
             <ul className="events">
-                <>
-                    {
-                        history.map((item) => {
-                            const hDate = dayjs(item.attributes.createdAt);
-                            const cDate = value;
-
-                            let cDateString = `${cDate.$D}/${cDate.$M}/${cDate.$y}`
-                            let hDateString = `${hDate.$D}/${hDate.$M}/${hDate.$y}`
-
-                            if (cDateString === hDateString) {
-                                let actionString = null
-
-                                switch (item.attributes.action) {
-                                    case 'create':
-                                        actionString = {
-                                            text: 'Растение создано',
-                                            status: 'warning'
-                                        }
-                                        break;
-                                    case 'update':
-                                        actionString = {
-                                            text: 'Растение обновлено',
-                                            status: 'warning'
-                                        }
-                                        break;
-                                    case 'other case value':
-                                        actionString = {
-                                            text: 'Название',
-                                            status: 'success'
-                                        }
-                                        break;
-                                    default:
-                                        actionString = 'Неизвестное действие'
-                                }
-
-                                return (
-                                    <li key={item.id}>
-                                        <Badge status={actionString.status} text={actionString.text} />
-                                    </li>
-                                )
-                            } else {
-                                return false
-                            }
-                        })
-                    }
-                </>
                 <>
                     {
                         weeks.map(function (weekItem) {
