@@ -55,7 +55,7 @@ const Plant = () => {
 
                             if (dayItem) {
                                 return (
-                                    <li className="calendar-day-info" key={dayItem.id}>
+                                    <li className={dayItem.passed ? 'calendar-day-info --passed' : 'calendar-day-info'} key={dayItem.id}>
                                         {dayItem.humidity ? (<Badge status={'success'} text={'Влажность: ' + dayItem.humidity + '%'} />) : false}
                                         {dayItem.description ? (<Badge status={'success'} text={dayItem.description} />) : false}
                                         {dayItem.tags.data.length ? dayItem.tags.data.map((tagItem) => {
@@ -73,7 +73,7 @@ const Plant = () => {
                 </>
             </ul>
         )
-    }
+    };
 
     const cellRender = (current, info) => {
         if (info.type === 'date') return dateCellRender(current);
@@ -129,7 +129,7 @@ const Plant = () => {
                 <button>Удалить день</button>
             </Popconfirm>
         )
-    }
+    };
 
     const SelectTags = (data) => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
@@ -188,7 +188,7 @@ const Plant = () => {
                 />
             </>
         )
-    }
+    };
 
     const PassDayButton = (data) => {
         let onClickEvent = (e) => {
@@ -223,7 +223,7 @@ const Plant = () => {
         return (
             <button onClick={onClickEvent}>Закрыть день</button>
         )
-    }
+    };
 
     const EditHumidity = (data) => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
@@ -265,7 +265,7 @@ const Plant = () => {
                 <InputNumber onBlur={onBlurEvent} addonAfter="%" min={0} max={100} defaultValue={weeks[weekIndex].days[dayIndex].humidity ? weeks[weekIndex].days[dayIndex].humidity : 0} />
             </>
         )
-    }
+    };
 
     const DayDescription = (data) => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
@@ -307,7 +307,7 @@ const Plant = () => {
                 <Input onBlur={onBlurEvent} defaultValue={weeks[weekIndex].days[dayIndex].description} placeholder="Описание дня" />
             </>
         )
-    }
+    };
 
     const WeekDescription = (data) => {
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
@@ -544,8 +544,6 @@ const Plant = () => {
             </h4>
         )
     };
-
-    // !TODO: Вовод в календарь информацию о дне
 
     return (
         <Card className="app-card card-plant" title={AppCardTitle(plantPage.Name)}>

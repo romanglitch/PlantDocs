@@ -46,33 +46,5 @@ module.exports = {
         ]
       },
     });
-
-    // Write history on create plant
-    strapi.entityService.create('api::history.history', {
-      data: {
-        action:'create',
-        content:result,
-        params:params,
-        request:event,
-        plant: result.id,
-        plant_published: false,
-      },
-    });
-  },
-  afterUpdate(event) {
-    const { result, params } = event;
-
-    if (result.publishedAt) {
-      strapi.entityService.create('api::history.history', {
-        data: {
-          action:'update',
-          content:result,
-          params:params,
-          request:event,
-          plant: result.id,
-          plant_published: !!result.publishedAt,
-        },
-      });
-    }
   }
 }

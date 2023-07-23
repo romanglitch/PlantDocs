@@ -49,14 +49,17 @@
     grid-gap: 10px;
 }
 
+.day:hover {
+    box-shadow: 0 2px 7px 1px rgb(0 0 0 / 4%);
+}
+
 .day.ant-popover-open {
     box-shadow: 0 5px 20px 6px rgb(0 0 0 / 8%);
 }
 
 .day.--deleted {
-    box-shadow:
-            0 5px 20px 6px rgb(0 0 0 / 8%),
-            inset 0 0 0 2px #ef1b1b;
+    box-shadow: 0 5px 20px 6px rgb(0 0 0 / 8%),
+    inset 0 0 0 2px #ef1b1b;
 }
 
 .day.--passed {
@@ -96,6 +99,10 @@
 
 .calendar-day-info:empty {
     display: none;
+}
+
+.calendar-day-info.--passed {
+    box-shadow: inset 0 0 0 2px #21d388;
 }
 
 .card-plant-tabs__calendar .ant-picker-cell .ant-picker-cell-inner .ant-picker-calendar-date-content {
