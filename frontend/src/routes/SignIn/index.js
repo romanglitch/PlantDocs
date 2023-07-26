@@ -47,6 +47,7 @@ const SignIn = () => {
             });
 
             const data = await response.json();
+
             if (data?.error) {
                 throw data?.error;
             } else {
@@ -62,7 +63,7 @@ const SignIn = () => {
             }
         } catch (error) {
             console.error(error);
-            setError(error?.message ?? "Упс :) что-то пошло не так...");
+            setError(error?.name === "ValidationError" ? 'Ошибка: ...' : error.message);
         } finally {
             setIsLoading(false);
         }

@@ -63,6 +63,7 @@ const Plant = () => {
                                                 <Badge key={tagItem.id} status={'default'} text={tagItem.attributes.name} />
                                             )
                                         }) : false }
+                                        {dayItem.passed ? (<Badge status={'success'} text={'День закрыт'} />) : false}
                                     </li>
                                 )
                             }
@@ -135,8 +136,9 @@ const Plant = () => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const dayObject = weekObject.days.find(item => item.id === data.dayId);
 
+        const {weeks} = plantPage
+
         let onChangeEvent = (values) => {
-            const {weeks} = plantPage
             dayObject.tags = values
 
             axios({
@@ -183,8 +185,8 @@ const Plant = () => {
                     }}
                     placeholder="Теги"
                     defaultValue={defaultOptions}
-                    onChange={onChangeEvent}
                     options={selectOptions}
+                    onChange={onChangeEvent}
                 />
             </>
         )

@@ -51,6 +51,11 @@ const AppHeader = () => {
                                 {user.username}
                             </div>
                         </div>
+                        <Button className="app-header-auth__button" type={'primary'} onClick={function () {
+                            navigate("/admin")
+                        }}>
+                            API
+                        </Button>
                         <Button
                             className="app-header-auth__button"
                             type="primary"
