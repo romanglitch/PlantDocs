@@ -17,7 +17,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import { API } from "../../constant";
 
 // Helpers
-import { setToken } from "../../helpers";
+import { setToken, getToken } from "../../helpers";
 
 // Styles
 import './styles.css'
@@ -30,6 +30,10 @@ const SignIn = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [error, setError] = useState("");
+
+    if (getToken()) {
+        navigate("/", { replace: true })
+    }
 
     const onFinish = async (values) => {
         setIsLoading(true);
@@ -68,6 +72,8 @@ const SignIn = () => {
             setIsLoading(false);
         }
     };
+
+    console.log()
 
     return (
         <Fragment>

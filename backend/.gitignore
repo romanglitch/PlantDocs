@@ -112,5 +112,4 @@ exports
 *.cache
 dist
 build
-build1111
 .strapi-updater.json
