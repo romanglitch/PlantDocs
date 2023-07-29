@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
     Alert,
     Button,
@@ -25,40 +26,39 @@ const SignIn = () => {
 
     const { setUser } = useAuthContext();
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const [error, setError] = useState("");
 
     const onFinish = async (values) => {
-        try {
-            const value = {
-                identifier: values.email,
-                password: values.password,
-            };
+        const value = {
+            identifier: values.email,
+            password: values.password,
+        };
 
-            const response = await fetch(`${API}/auth/local`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(value),
-            });
+        setIsLoading(true);
 
-            const data = await response.json();
+        await axios({
+            method: 'post',
+            url: `${API}/auth/local`,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            data: value
+        }).then(function (response) {
+            // set the token
+            setToken(response.data.jwt);
 
-            if (data?.error) {
-                throw data?.error;
-            } else {
-                // set the token
-                setToken(data.jwt);
+            // set the user
+            setUser(response.data.user);
 
-                // set the user
-                setUser(data.user);
+            navigate('/', { replace: true });
 
-                navigate("/", { replace: true });
-            }
-        } catch (error) {
+            setIsLoading(false);
+        }).catch(function (error) {
             console.error(error);
-            setError(error?.name === "ValidationError" ? 'Ошибка: ...' : error.message);
-        }
+            setError(error?.message ?? "Something went wrong!");
+        });
     };
 
     return (
@@ -72,6 +72,7 @@ const SignIn = () => {
                     afterClose={() => setError("")}
                 />
             ) : null}
+            {isLoading ? 'Loading...' : false}
             <Form
                 name="basic"
                 layout="vertical"

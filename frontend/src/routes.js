@@ -1,15 +1,16 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
+// Helpers
+import { getToken } from "./helpers";
+
 // Routes
 import SignIn from "./routes/SignIn";
 import Home from './routes/Home';
 import Plant from "./routes/Plant";
-import Error from "./routes/Error";
 import TestView from './routes/TestView';
+import Error from "./routes/Error";
 
-// Helpers
-import { getToken } from "./helpers";
 
 const AppRoutes = () => {
     return (
