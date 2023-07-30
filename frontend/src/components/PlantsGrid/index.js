@@ -100,7 +100,7 @@ const PlantsGrid = () => {
                                 </CheckableTag>
                             ))}
                         </div>
-                    ) : false }
+                    ) : error }
                     {plants.length ? (
                         <div className="app-plants-grid">
                             {plants.map(({ id, attributes }) => (
@@ -131,7 +131,7 @@ const PlantsGrid = () => {
                                 </Link>
                             ))}
                         </div>
-                    ) : false }
+                    ) : error }
                 </>
             )}
         </div>
