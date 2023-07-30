@@ -2,3 +2,10 @@
     max-width: 415px;
     margin: auto;
 }
+
+.app-plant-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+}

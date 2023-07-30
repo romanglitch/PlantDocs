@@ -4,7 +4,7 @@ import axios from "axios";
 import { formatDate, countDays } from "../../publicHelpers";
 import {
     Card,
-    Descriptions,
+    Descriptions, Spin,
     Tag,
 } from "antd";
 
@@ -15,6 +15,7 @@ import './styles.css';
 const { CheckableTag } = Tag;
 
 const PlantsGrid = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [plants, setPlants] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -43,12 +44,12 @@ const PlantsGrid = () => {
 
                 setCategories(data.data)
             })
-            .catch((error) => setError(error));
+            .catch((error) => {
+                console.log(error)
+                setError(error)
+            })
+            .finally(() => setIsLoading(false));
     }, [getPlantsRequest]);
-
-    if (error) {
-        return <div>Ошибка: {error.message}</div>;
-    }
 
     const tagHandleChange = (tag, checked) => {
         const nextSelectedTags = checked
@@ -80,51 +81,59 @@ const PlantsGrid = () => {
 
     return (
         <div className="app-plants">
-            {categories.isPlants ? (
-                <div className="app-plants-tags">
-                    {categories.map((tag) => (
-                        <CheckableTag
-                            key={tag.id}
-                            checked={selectedTags.includes(tag)}
-                            onChange={(checked) => tagHandleChange(tag, checked)}
-                            className="app-plants-tags__item"
-                        >
-                            {tag.attributes.Name}
-                        </CheckableTag>
-                    ))}
+            {isLoading ? (
+                <div className="app-plant-loader">
+                    <Spin size="large" />
                 </div>
-            ) : false }
-            {plants.length ? (
-                <div className="app-plants-grid">
-                    {plants.map(({ id, attributes }) => (
-                        <Link className="app-plant-item" key={id} to={'/plants/' + id}>
-                            <Card className="app-plant-item__card" title={attributes.Name}>
-                                <Descriptions className="app-plant-item__descriptions" size={'small'} column={1}>
-                                    <Descriptions.Item className="app-plant-item__descriptions-item" label="Дней">
-                                        {countDays(attributes.weeks)}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item className="app-plant-item__descriptions-item" label="Категории">
-                                        {
-                                            attributes.categories.data.length ? attributes.categories.data.map((cat_data) => (
-                                                <Tag bordered={false} key={cat_data.id}>
-                                                    {cat_data.attributes.Name}
-                                                </Tag>
-                                            )) : (
-                                                <Tag bordered={false}>
-                                                    Без категории
-                                                </Tag>
-                                            )
-                                        }
-                                    </Descriptions.Item>
-                                    <Descriptions.Item className="app-plant-item__descriptions-item" label="Последнее обновление">
-                                        {formatDate(attributes.updatedAt)}
-                                    </Descriptions.Item>
-                                </Descriptions>
-                            </Card>
-                        </Link>
-                    ))}
-                </div>
-            ) : 'Растения не найдены' }
+            ) : (
+                <>
+                    {categories.isPlants ? (
+                        <div className="app-plants-tags">
+                            {categories.map((tag) => (
+                                <CheckableTag
+                                    key={tag.id}
+                                    checked={selectedTags.includes(tag)}
+                                    onChange={(checked) => tagHandleChange(tag, checked)}
+                                    className="app-plants-tags__item"
+                                >
+                                    {tag.attributes.Name}
+                                </CheckableTag>
+                            ))}
+                        </div>
+                    ) : false }
+                    {plants.length ? (
+                        <div className="app-plants-grid">
+                            {plants.map(({ id, attributes }) => (
+                                <Link className="app-plant-item" key={id} to={'/plants/' + id}>
+                                    <Card className="app-plant-item__card" title={attributes.Name}>
+                                        <Descriptions className="app-plant-item__descriptions" size={'small'} column={1}>
+                                            <Descriptions.Item className="app-plant-item__descriptions-item" label="Дней">
+                                                {countDays(attributes.weeks)}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item className="app-plant-item__descriptions-item" label="Категории">
+                                                {
+                                                    attributes.categories.data.length ? attributes.categories.data.map((cat_data) => (
+                                                        <Tag bordered={false} key={cat_data.id}>
+                                                            {cat_data.attributes.Name}
+                                                        </Tag>
+                                                    )) : (
+                                                        <Tag bordered={false}>
+                                                            Без категории
+                                                        </Tag>
+                                                    )
+                                                }
+                                            </Descriptions.Item>
+                                            <Descriptions.Item className="app-plant-item__descriptions-item" label="Последнее обновление">
+                                                {formatDate(attributes.updatedAt)}
+                                            </Descriptions.Item>
+                                        </Descriptions>
+                                    </Card>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : false }
+                </>
+            )}
         </div>
     );
 }

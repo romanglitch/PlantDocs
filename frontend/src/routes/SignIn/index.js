@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
+    Spin,
     Alert,
     Button,
     Card,
@@ -52,8 +53,6 @@ const SignIn = () => {
             // set the user
             setUser(response.data.user);
 
-            window.isAuth = true;
-
             navigate("/");
         }).catch(function (error) {
             console.error(error);
@@ -74,44 +73,51 @@ const SignIn = () => {
                     afterClose={() => setError("")}
                 />
             ) : null}
-            {isLoading ? 'Loading...' : false}
-            <Form
-                name="basic"
-                layout="vertical"
-                onFinish={onFinish}
-                autoComplete="off"
-            >
-                <Form.Item
-                    label="Адрес эл. почты"
-                    name="email"
-                    rules={[
-                        {
-                            required: true,
-                            type: "email",
-                        },
-                    ]}
-                >
-                    <Input placeholder="Email address" />
-                </Form.Item>
-
-                <Form.Item
-                    label="Пароль"
-                    name="password"
-                    rules={[{ required: true }]}
-                >
-                    <Input.Password placeholder="Password" />
-                </Form.Item>
-
-                <Form.Item>
-                    <Button
-                        type="primary"
-                        htmlType="submit"
-                        className="login_submit_btn"
+            {isLoading ? (
+                <div className="app-plant-loader">
+                    <Spin size="large" />
+                </div>
+            ) : (
+                <>
+                    <Form
+                        name="basic"
+                        layout="vertical"
+                        onFinish={onFinish}
+                        autoComplete="off"
                     >
-                        Войти
-                    </Button>
-                </Form.Item>
-            </Form>
+                        <Form.Item
+                            label="Адрес эл. почты"
+                            name="email"
+                            rules={[
+                                {
+                                    required: true,
+                                    type: "email",
+                                },
+                            ]}
+                        >
+                            <Input placeholder="Email address" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Пароль"
+                            name="password"
+                            rules={[{ required: true }]}
+                        >
+                            <Input.Password placeholder="Password" />
+                        </Form.Item>
+
+                        <Form.Item>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                className="login_submit_btn"
+                            >
+                                Войти
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </>
+            )}
         </Card>
     );
 };
