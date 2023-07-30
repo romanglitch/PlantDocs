@@ -6,7 +6,7 @@ import axios from "axios";
 import { getToken } from "../../helpers";
 import { formatDate, countDays } from "../../publicHelpers";
 
-import { Spin, Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider, Popover, Select, Popconfirm, Input, InputNumber, message } from "antd";
+import { Spin, Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider, Popover, Select, Popconfirm, Input, InputNumber } from "antd";
 import { SmileOutlined, CalendarOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
@@ -26,8 +26,6 @@ const Plant = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [plantPage, setPlantPage] = useState([]);
     const [tags, setTags] = useState([]);
-
-    const [messageApi, contextHolder] = message.useMessage();
 
     const {id} = useParams();
 
@@ -178,7 +176,6 @@ const Plant = () => {
 
         return (
             <>
-                {contextHolder}
                 <Select
                     mode="multiple"
                     allowClear
@@ -257,15 +254,12 @@ const Plant = () => {
                     }).catch(function (error) {
                         console.log(error);
                     });
-
-                    messageApi.info('Влажность обновлена')
                 }, 1000)
             }
         }
 
         return (
             <>
-                {contextHolder}
                 <InputNumber onBlur={onBlurEvent} addonAfter="%" min={0} max={100} defaultValue={weeks[weekIndex].days[dayIndex].humidity ? weeks[weekIndex].days[dayIndex].humidity : 0} />
             </>
         )
@@ -299,15 +293,12 @@ const Plant = () => {
                     }).catch(function (error) {
                         console.log(error);
                     });
-
-                    messageApi.info('Описание обновлено')
                 }, 1000)
             }
         }
 
         return (
             <>
-                {contextHolder}
                 <Input onBlur={onBlurEvent} defaultValue={weeks[weekIndex].days[dayIndex].description} placeholder="Описание дня" />
             </>
         )
@@ -339,15 +330,12 @@ const Plant = () => {
                     }).catch(function (error) {
                         console.log(error);
                     });
-
-                    messageApi.info('Описание недели обновлено')
                 }, 1000)
             }
         }
 
         return (
             <>
-                {contextHolder}
                 <Input onBlur={onBlurEvent} defaultValue={weeks[weekIndex].description} addonBefore="Описание недели" placeholder="Описание недели" />
             </>
         )
@@ -589,26 +577,30 @@ const Plant = () => {
                                             {formatDate(plantPage.updatedAt)}
                                         </Descriptions.Item>
                                     </Descriptions>
-                                    <Title level={5}>Описание: </Title>
-                                    <div className="card-plant-tabs__plant-content">
-                                        <ReactMarkdown
-                                            transformImageUri={
-                                                function (src) {
-                                                    src = `${process.env.REACT_APP_BACKEND}${src}`
-                                                    return src
-                                                }
-                                            }
-                                            transformLinkUri={
-                                                function (href) {
-                                                    href = `${process.env.REACT_APP_BACKEND}${href}`
-                                                    return href
-                                                }
-                                            }
-                                        >
-                                            {plantPage.Content}
-                                        </ReactMarkdown>
-                                    </div>
-                                    <Divider/>
+                                    {plantPage.Content ? (
+                                        <>
+                                            <Title level={5}>Описание: </Title>
+                                            <div className="card-plant-tabs__plant-content">
+                                                <ReactMarkdown
+                                                    transformImageUri={
+                                                        function (src) {
+                                                            src = `${process.env.REACT_APP_BACKEND}${src}`
+                                                            return src
+                                                        }
+                                                    }
+                                                    transformLinkUri={
+                                                        function (href) {
+                                                            href = `${process.env.REACT_APP_BACKEND}${href}`
+                                                            return href
+                                                        }
+                                                    }
+                                                >
+                                                    {plantPage.Content}
+                                                </ReactMarkdown>
+                                            </div>
+                                            <Divider/>
+                                        </>
+                                    ) : false }
                                     <Title level={5}>Блоки недель: </Title>
                                     <div className="card-plant-tabs__weeks">
                                         {plantPage.weeks ? (
