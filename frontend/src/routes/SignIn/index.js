@@ -31,12 +31,12 @@ const SignIn = () => {
     const [error, setError] = useState("");
 
     const onFinish = async (values) => {
+        setIsLoading(true);
+
         const value = {
             identifier: values.email,
             password: values.password,
         };
-
-        setIsLoading(true);
 
         await axios({
             method: 'post',
@@ -52,12 +52,14 @@ const SignIn = () => {
             // set the user
             setUser(response.data.user);
 
-            navigate('/', { replace: true });
+            window.isAuth = true;
 
-            setIsLoading(false);
+            navigate("/");
         }).catch(function (error) {
             console.error(error);
             setError(error?.message ?? "Something went wrong!");
+        }).finally(() => {
+            setIsLoading(false);
         });
     };
 
