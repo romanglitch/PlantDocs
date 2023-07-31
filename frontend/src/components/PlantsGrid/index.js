@@ -107,8 +107,10 @@ const PlantsGrid = () => {
                                 <Link className="app-plant-item" key={id} to={'/plants/' + id}>
                                     <Card className="app-plant-item__card" title={attributes.Name}>
                                         <Descriptions className="app-plant-item__descriptions" size={'small'} column={1}>
-                                            <Descriptions.Item className="app-plant-item__descriptions-item" label="Дней">
-                                                {countDays(attributes.weeks)}
+                                            <Descriptions.Item className="app-plant-item__descriptions-item" label="Растёт">
+                                                <div className="app-plant-item__days">
+                                                    {countDays(attributes.weeks)} дней
+                                                </div>
                                             </Descriptions.Item>
                                             <Descriptions.Item className="app-plant-item__descriptions-item" label="Категории">
                                                 {

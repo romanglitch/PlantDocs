@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "antd";
 import {
-    UserOutlined
+    UserOutlined,
+    LogoutOutlined,
+    DashboardOutlined
 } from '@ant-design/icons';
 
 // Context
@@ -51,17 +53,15 @@ const AppHeader = () => {
                                 {user.username}
                             </div>
                         </div>
-                        <Button className="app-header-auth__button" type={'primary'} onClick={function () {
-                            navigate("/admin")
-                        }}>
-                            API
+                        <Button className="app-header-auth__button" type={'link'} href={`${process.env.REACT_APP_BACKEND}/admin`} target={'_blank'}>
+                            <DashboardOutlined /> Панель управления
                         </Button>
                         <Button
                             className="app-header-auth__button"
                             type="primary"
                             onClick={handleLogout}
                         >
-                            Выйти
+                            <LogoutOutlined /> Выйти
                         </Button>
                     </div>
                 ) : false}

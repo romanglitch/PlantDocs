@@ -138,25 +138,35 @@ const Plant = () => {
 
         const {weeks} = plantPage
 
+        let isChanged = false
+
         let onChangeEvent = (values) => {
             dayObject.tags = values
+            isChanged = true
+        }
 
-            axios({
-                method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`
-                },
-                data: {
-                    data: {
-                        weeks: weeks
-                    }
-                }
-            }).then(function (response) {
-                setPlantPage(response.data.data.attributes)
-            }).catch(function (error) {
-                console.log(error);
-            });
+        let onMouseLeave = () => {
+            if (isChanged) {
+                setTimeout(function () {
+                    axios({
+                        method: 'put',
+                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`,
+                        headers: {
+                            'Authorization': `Bearer ${getToken()}`
+                        },
+                        data: {
+                            data: {
+                                weeks: weeks
+                            }
+                        }
+                    }).then(function (response) {
+                        setPlantPage(response.data.data.attributes)
+                        isChanged = false
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }, 300)
+            }
         }
 
         const selectOptions = [];
@@ -186,10 +196,11 @@ const Plant = () => {
                     defaultValue={defaultOptions}
                     options={selectOptions}
                     onChange={onChangeEvent}
+                    onMouseLeave={onMouseLeave}
                 />
             </>
         )
-    };
+    }
 
     const PassDayButton = (data) => {
         let onClickEvent = (e) => {

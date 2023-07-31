@@ -19,9 +19,9 @@ const App = () => {
         <ConfigProvider
             locale={ruRU}
             theme={{
-                token: {
-                    colorPrimary: '#21D388',
-                }
+                // token: {
+                //     colorPrimary: '#21D388',
+                // }
             }}
         >
             <Layout className="app-layout">
