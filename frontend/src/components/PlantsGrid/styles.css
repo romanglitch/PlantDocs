@@ -4,32 +4,27 @@
     grid-gap: 24px;
 }
 
-.app-plants {
-    display: grid;
-    grid-gap: 20px;
-}
-
 .app-plants-tags {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    user-select: none;
+    margin-bottom: 24px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid #f0f0f0;
 }
 
-.app-plants-tags span {
-    margin-right: 8px;
+.app-plants-tags > *:not(:last-child) {
+    position: relative;
+    z-index: 1;
 }
 
-.app-plant-loader {
-    grid-column: 5 span;
-    padding: 10px 0;
+.app-plants-tags > *:not(:last-child):after {
+    content: "";
+    position: absolute;
+    right: -5px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    height: 100%;
+    background: #f0f0f0;
 }
 
-.app-plant-item {
-    overflow: hidden;
-    transition: all .33s ease;
-}
-
-.app-plant-item:hover {
-    box-shadow: 0 2px 7px 1px rgb(0 0 0 / 4%);
-}

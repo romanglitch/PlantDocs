@@ -3,9 +3,7 @@ import {Link} from "react-router-dom";
 import axios from "axios";
 import { formatDate, countDays } from "../../publicHelpers";
 import {
-    Card,
-    Descriptions, Spin,
-    Tag,
+    Spin, Tag,
 } from "antd";
 
 // Styles
@@ -21,7 +19,7 @@ const PlantsGrid = () => {
     const [categories, setCategories] = useState([]);
     const [selectedTags, setSelectedTags] = useState(['All']);
 
-    let getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=weeks.days`;
+    let getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=image&populate[2]=weeks.days`;
 
     useEffect(() => {
         axios
@@ -70,7 +68,7 @@ const PlantsGrid = () => {
                 }
             })
         } else {
-            getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=weeks.days`
+            getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=image&populate[2]=weeks.days`
 
             axios
                 .get(getPlantsRequest)
@@ -105,31 +103,32 @@ const PlantsGrid = () => {
                         <div className="app-plants-grid">
                             {plants.map(({ id, attributes }) => (
                                 <Link className="app-plant-item" key={id} to={'/plants/' + id}>
-                                    <Card className="app-plant-item__card" title={attributes.Name}>
-                                        <Descriptions className="app-plant-item__descriptions" size={'small'} column={1}>
-                                            <Descriptions.Item className="app-plant-item__descriptions-item" label="Растёт">
-                                                <div className="app-plant-item__days">
-                                                    {countDays(attributes.weeks)} дней
-                                                </div>
-                                            </Descriptions.Item>
-                                            <Descriptions.Item className="app-plant-item__descriptions-item" label="Категории">
-                                                {
-                                                    attributes.categories.data.length ? attributes.categories.data.map((cat_data) => (
-                                                        <Tag bordered={false} key={cat_data.id}>
-                                                            {cat_data.attributes.Name}
-                                                        </Tag>
-                                                    )) : (
-                                                        <Tag bordered={false}>
-                                                            Без категории
-                                                        </Tag>
-                                                    )
-                                                }
-                                            </Descriptions.Item>
-                                            <Descriptions.Item className="app-plant-item__descriptions-item" label="Последнее обновление">
+                                    <div className="app-plant-item__content">
+                                        <div className="app-plant-item__name">
+                                            {attributes.Name}
+                                        </div>
+                                        <div className="app-plant-item__thumb">
+                                            <div className="app-plant-item__days">
+                                                {countDays(attributes.weeks)} дней
+                                            </div>
+                                            <div className="app-plant-item__date">
                                                 {formatDate(attributes.updatedAt)}
-                                            </Descriptions.Item>
-                                        </Descriptions>
-                                    </Card>
+                                            </div>
+                                        </div>
+                                        <div className="app-plant-item__categories">
+                                            {
+                                                attributes.categories.data.length ? attributes.categories.data.map((cat_data) => (
+                                                    <Tag bordered={false} key={cat_data.id}>
+                                                        {cat_data.attributes.Name}
+                                                    </Tag>
+                                                )) : (
+                                                    <Tag bordered={false}>
+                                                        Без категории
+                                                    </Tag>
+                                                )
+                                            }
+                                        </div>
+                                    </div>
                                 </Link>
                             ))}
                         </div>
