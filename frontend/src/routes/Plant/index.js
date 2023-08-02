@@ -1,26 +1,34 @@
 import React from 'react';
 import { useEffect, useState } from "react";
 import ReactMarkdown from 'react-markdown'
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../../helpers";
 import { formatDate, countDays } from "../../publicHelpers";
 
-import { Spin, Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider, Popover, Select, Popconfirm, Input, InputNumber, FloatButton } from "antd";
-import { SmileOutlined, CalendarOutlined } from '@ant-design/icons';
+import {
+    Spin,
+    Card,
+    Tabs,
+    Badge,
+    Calendar,
+    Popover,
+    Select,
+    Popconfirm,
+    Input,
+    InputNumber,
+    FloatButton,
+    Tag
+} from "antd";
+import { SmileOutlined, CalendarOutlined, FileTextOutlined, LeftOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
-
-// Components
-import AppCardTitle from "../../components/AppCardTitle";
 
 // Styles
 import './styles.css'
 
 dayjs.locale('ru-ru');
-
-const { Title } = Typography;
 
 const Plant = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -568,17 +576,42 @@ const Plant = () => {
 
     return (
         <>
-            <Card className="app-card card-plant" title={AppCardTitle(plantPage.Name)}>
+            <Card className="app-card card-plant">
                 {isLoading ? (
                     <div className="app-plant-loader">
                         <Spin size="large" />
                     </div>
                 ) : (
                     <>
-                        <FloatButton.Group shape="square" style={{ right: 24 }}>
-                            <FloatButton tooltip="Описание растения" />
-                            <FloatButton.BackTop visibilityHeight={100} />
-                        </FloatButton.Group>
+                        <FloatButton.BackTop shape="square" visibilityHeight={100} />
+                        <div className="app-plant-item app-plant-item_card-plant">
+                            <div className="app-plant-item__content">
+                                <div className="app-plant-item__days">{countDays(plantPage.weeks)}<span>дней</span></div>
+                                <div className="app-plant-item__name">
+                                    <Link className="app-plant-item__home-link" to="/">
+                                        <LeftOutlined />
+                                        <span>{plantPage.Name}</span>
+                                        <span>К растениям</span>
+                                    </Link>
+                                </div>
+                                <div className="app-plant-item__date">
+                                    Последнее обновление:
+                                    <span>{formatDate(plantPage.updatedAt)}</span>
+                                </div>
+                                <div className="app-plant-item__categories">
+                                    <div className="app-plant-item__categories__title">Категории:</div>
+                                    {plantPage.categories ? plantPage.categories.data.map((cat_data) => (
+                                        <Tag bordered={false} key={cat_data.id}>
+                                            {cat_data.attributes.Name}
+                                        </Tag>
+                                    )) : (
+                                        <Tag bordered={false}>
+                                            Без категории
+                                        </Tag>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                         <Tabs
                             className="card-plant-tabs"
                             defaultActiveKey="1"
@@ -593,50 +626,6 @@ const Plant = () => {
                                     ),
                                     children: (
                                         <div className="card-plant-tabs__content">
-                                            <Descriptions className="card-plant-tabs__descriptions" title="Информация">
-                                                <Descriptions.Item label="Дней">
-                                                    {
-                                                        countDays(plantPage.weeks)
-                                                    }
-                                                </Descriptions.Item>
-                                                <Descriptions.Item label="Категории">
-                                                    {plantPage.categories ? (
-                                                        plantPage.categories.data.map((cat_data) => (
-                                                            <div key={cat_data.id}>
-                                                                {cat_data.attributes.Name}
-                                                            </div>
-                                                        ))
-                                                    ) : false }
-                                                </Descriptions.Item>
-                                                <Descriptions.Item label="Последнее обновление">
-                                                    {formatDate(plantPage.updatedAt)}
-                                                </Descriptions.Item>
-                                            </Descriptions>
-                                            {plantPage.Content ? (
-                                                <>
-                                                    <Title level={5}>Описание: </Title>
-                                                    <div className="card-plant-tabs__plant-content">
-                                                        <ReactMarkdown
-                                                            transformImageUri={
-                                                                function (src) {
-                                                                    src = `${process.env.REACT_APP_BACKEND}${src}`
-                                                                    return src
-                                                                }
-                                                            }
-                                                            transformLinkUri={
-                                                                function (href) {
-                                                                    href = `${process.env.REACT_APP_BACKEND}${href}`
-                                                                    return href
-                                                                }
-                                                            }
-                                                        >
-                                                            {plantPage.Content}
-                                                        </ReactMarkdown>
-                                                    </div>
-                                                    <Divider/>
-                                                </>
-                                            ) : false }
-                                            <Title level={5}>Блоки недель: </Title>
                                             <div className="card-plant-tabs__weeks">
                                                 {plantPage.weeks ? (
                                                     plantPage.weeks.map((data, index) => (
@@ -730,6 +719,41 @@ const Plant = () => {
                                         </div>
                                     ),
                                 },
+                                plantPage.Content ? {
+                                    key: '3',
+                                    label: (
+                                        <div className="card-plant-tabs__label">
+                                            <FileTextOutlined />
+                                            Описание
+                                        </div>
+                                    ),
+                                    children: (
+                                        <div className="card-plant-tabs__content">
+                                            {plantPage.Content ? (
+                                                <>
+                                                    <div className="card-plant-tabs__plant-content">
+                                                        <ReactMarkdown
+                                                            transformImageUri={
+                                                                function (src) {
+                                                                    src = `${process.env.REACT_APP_BACKEND}${src}`
+                                                                    return src
+                                                                }
+                                                            }
+                                                            transformLinkUri={
+                                                                function (href) {
+                                                                    href = `${process.env.REACT_APP_BACKEND}${href}`
+                                                                    return href
+                                                                }
+                                                            }
+                                                        >
+                                                            {plantPage.Content}
+                                                        </ReactMarkdown>
+                                                    </div>
+                                                </>
+                                            ) : false }
+                                        </div>
+                                    ),
+                                } : false
                             ]}
                         />
                     </>

@@ -7,14 +7,8 @@
     grid-gap: 30px;
 }
 
-.week {
-    border: 1px solid #f0f0f0;
-    border-radius: 8px;
-    padding: 20px;
-}
-
 .week__title {
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 500;
     border-bottom: 1px solid #f0f0f0;
     padding-bottom: 25px;
@@ -108,4 +102,41 @@
 .card-plant-tabs__calendar .ant-picker-cell .ant-picker-cell-inner .ant-picker-calendar-date-content {
     height: 130px;
     padding-bottom: 5px;
+}
+
+.app-plant-item__home-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.app-plant-item__home-link > span:last-child {
+    display: none;
+}
+
+.app-plant-item__home-link:hover > span:last-child {
+    display: block;
+}
+
+.app-plant-item__home-link:hover > span:nth-child(2) {
+    display: none;
+}
+
+.app-plant-item__home-link .anticon {
+    margin-top: 1px;
+}
+
+.app-plant-item.app-plant-item_card-plant {
+    margin-bottom: 24px;
+}
+
+.card-plant-tabs .ant-tabs-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgb(255 255 255 / 80%);
+    backdrop-filter: blur(24px);
+    margin: -10px -24px 24px -24px;
+    padding: 10px 24px 0;
 }
