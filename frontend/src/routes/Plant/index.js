@@ -598,18 +598,20 @@ const Plant = () => {
                                     Последнее обновление:
                                     <span>{formatDate(plantPage.updatedAt)}</span>
                                 </div>
-                                <div className="app-plant-item__categories">
-                                    <div className="app-plant-item__categories__title">Категории:</div>
-                                    {plantPage.categories ? plantPage.categories.data.map((cat_data) => (
-                                        <Tag bordered={false} key={cat_data.id}>
-                                            {cat_data.attributes.Name}
-                                        </Tag>
-                                    )) : (
-                                        <Tag bordered={false}>
-                                            Без категории
-                                        </Tag>
-                                    )}
-                                </div>
+                                {plantPage.categories ? (
+                                    <div className="app-plant-item__categories">
+                                        <div className="app-plant-item__categories__title">Категории:</div>
+                                        {plantPage.categories.data.length ? plantPage.categories.data.map((cat_data) => (
+                                            <Tag bordered={false} key={cat_data.id}>
+                                                {cat_data.attributes.Name}
+                                            </Tag>
+                                        )) : (
+                                            <Tag bordered={false}>
+                                                Без категории
+                                            </Tag>
+                                        )}
+                                    </div>
+                                ) : false}
                             </div>
                         </div>
                         <Tabs
