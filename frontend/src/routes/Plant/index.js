@@ -6,7 +6,7 @@ import axios from "axios";
 import { getToken } from "../../helpers";
 import { formatDate, countDays } from "../../publicHelpers";
 
-import { Spin, Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider, Popover, Select, Popconfirm, Input, InputNumber } from "antd";
+import { Spin, Card, Tabs, Badge, Calendar, Descriptions, Typography, Divider, Popover, Select, Popconfirm, Input, InputNumber, FloatButton } from "antd";
 import { SmileOutlined, CalendarOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
@@ -548,168 +548,194 @@ const Plant = () => {
         )
     };
 
+    const WeekIndex = (props) => {
+        let index = props.weekIndex + 1
+        let indexTitle = null
+
+        switch (index) {
+            case 1:
+                indexTitle = `Каска`
+                break;
+            case 2:
+                indexTitle = `Расток`
+                break;
+            default:
+                indexTitle = `${index - 2} неделя`
+        }
+
+        return indexTitle
+    }
+
     return (
-        <Card className="app-card card-plant" title={AppCardTitle(plantPage.Name)}>
-            {isLoading ? (
-                <div className="app-plant-loader">
-                    <Spin size="large" />
-                </div>
-            ) : (
-                <Tabs
-                    className="card-plant-tabs"
-                    defaultActiveKey="1"
-                    items={[
-                        {
-                            key: '1',
-                            label: (
-                                <div className="card-plant-tabs__label">
-                                    <SmileOutlined />
-                                    Растение
-                                </div>
-                            ),
-                            children: (
-                                <div className="card-plant-tabs__content">
-                                    <Descriptions className="card-plant-tabs__descriptions" title="Информация">
-                                        <Descriptions.Item label="Дней">
-                                            {
-                                                countDays(plantPage.weeks)
-                                            }
-                                        </Descriptions.Item>
-                                        <Descriptions.Item label="Категории">
-                                            {plantPage.categories ? (
-                                                plantPage.categories.data.map((cat_data) => (
-                                                    <div key={cat_data.id}>
-                                                        {cat_data.attributes.Name}
-                                                    </div>
-                                                ))
-                                            ) : false }
-                                        </Descriptions.Item>
-                                        <Descriptions.Item label="Последнее обновление">
-                                            {formatDate(plantPage.updatedAt)}
-                                        </Descriptions.Item>
-                                    </Descriptions>
-                                    {plantPage.Content ? (
-                                        <>
-                                            <Title level={5}>Описание: </Title>
-                                            <div className="card-plant-tabs__plant-content">
-                                                <ReactMarkdown
-                                                    transformImageUri={
-                                                        function (src) {
-                                                            src = `${process.env.REACT_APP_BACKEND}${src}`
-                                                            return src
-                                                        }
+        <>
+            <Card className="app-card card-plant" title={AppCardTitle(plantPage.Name)}>
+                {isLoading ? (
+                    <div className="app-plant-loader">
+                        <Spin size="large" />
+                    </div>
+                ) : (
+                    <>
+                        <FloatButton.Group shape="square" style={{ right: 24 }}>
+                            <FloatButton tooltip="Описание растения" />
+                            <FloatButton.BackTop visibilityHeight={100} />
+                        </FloatButton.Group>
+                        <Tabs
+                            className="card-plant-tabs"
+                            defaultActiveKey="1"
+                            items={[
+                                {
+                                    key: '1',
+                                    label: (
+                                        <div className="card-plant-tabs__label">
+                                            <SmileOutlined />
+                                            Растение
+                                        </div>
+                                    ),
+                                    children: (
+                                        <div className="card-plant-tabs__content">
+                                            <Descriptions className="card-plant-tabs__descriptions" title="Информация">
+                                                <Descriptions.Item label="Дней">
+                                                    {
+                                                        countDays(plantPage.weeks)
                                                     }
-                                                    transformLinkUri={
-                                                        function (href) {
-                                                            href = `${process.env.REACT_APP_BACKEND}${href}`
-                                                            return href
-                                                        }
-                                                    }
-                                                >
-                                                    {plantPage.Content}
-                                                </ReactMarkdown>
-                                            </div>
-                                            <Divider/>
-                                        </>
-                                    ) : false }
-                                    <Title level={5}>Блоки недель: </Title>
-                                    <div className="card-plant-tabs__weeks">
-                                        {plantPage.weeks ? (
-                                            plantPage.weeks.map((data, index) => (
-                                                <div className="week" key={data.id}>
-                                                    <div className="week__title">
-                                                        {index + 1} Неделя:
-                                                    </div>
-                                                    <div className="week__description">
-                                                        <WeekDescription weekId={data.id} />
-                                                    </div>
-                                                    <div className="week__days">
-                                                        {
-                                                            data.days.map((days_data, dayIndex) => (
-                                                                <Popover
-                                                                    trigger="click"
-                                                                    placement="top"
-                                                                    key={days_data.id}
-                                                                    content={!days_data.passed ?
-                                                                        (
-                                                                            <div className={'popover-content'}>
-                                                                                <PassDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                {/* If this week is last */}
-                                                                                {(index + 1) === plantPage.weeks.length ? (
-                                                                                    <DeleteDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                ) : false }
-                                                                                <SelectTags weekId={data.id} dayId={days_data.id} />
-                                                                                <EditHumidity weekId={data.id} dayId={days_data.id} />
-                                                                                <DayDescription weekId={data.id} dayId={days_data.id} />
-                                                                            </div>
-                                                                        ) : null
-                                                                    }
-                                                                >
-                                                                    <div className={days_data.passed ? 'day --passed' : 'day'}>
-                                                                        <div className="day__title">
-                                                                            <DayIndex thisDayIndex={dayIndex} thisDayId={days_data.id} thisWeekIndex={index}/>
-                                                                        </div>
-                                                                        <div className="day__date">
-                                                                            {
-                                                                                formatDate(days_data.date)
-                                                                            }
-                                                                        </div>
-                                                                        <div className="day__humidity">
-                                                                            {days_data.humidity ? `Влажность: ${days_data.humidity}%` : `Влажность: 0%`}
-                                                                        </div>
-                                                                        <div className="day__tags">
-                                                                            Теги:
-                                                                            {days_data.tags ? (
-                                                                                days_data.tags.data.map((tags_data) => (
-                                                                                    <div className="tag" key={tags_data.id}>
-                                                                                        <div className="tag__name">
-                                                                                            {tags_data.attributes.name}
-                                                                                        </div>
-                                                                                    </div>
-                                                                                ))
-                                                                            ) : false}
-                                                                        </div>
-                                                                        <div className="day__description">
-                                                                            {days_data.description ? `Описание: ${days_data.description}` : `Описание: отсутствует`}
-                                                                        </div>
-                                                                    </div>
-                                                                </Popover>
-                                                            ))
-                                                        }
-                                                    </div>
-                                                    {/* If this week is last */}
-                                                    {(index + 1) === plantPage.weeks.length ? (
-                                                        <>
-                                                            <AddOneDayButton weekIndex={index} />
-                                                            <AddSevenDaysButton weekIndex={index} />
-                                                        </>
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label="Категории">
+                                                    {plantPage.categories ? (
+                                                        plantPage.categories.data.map((cat_data) => (
+                                                            <div key={cat_data.id}>
+                                                                {cat_data.attributes.Name}
+                                                            </div>
+                                                        ))
                                                     ) : false }
-                                                </div>
-                                            ))
-                                        ) : false}
-                                    </div>
-                                    <AddWeekButton />
-                                </div>
-                            ),
-                        },
-                        {
-                            key: '2',
-                            label: (
-                                <div className="card-plant-tabs__label">
-                                    <CalendarOutlined />
-                                    Календарь
-                                </div>
-                            ),
-                            children: (
-                                <div className="card-plant-tabs__content">
-                                    <Calendar className="card-plant-tabs__calendar" cellRender={cellRender} />
-                                </div>
-                            ),
-                        },
-                    ]}
-                />
-            )}
-        </Card>
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label="Последнее обновление">
+                                                    {formatDate(plantPage.updatedAt)}
+                                                </Descriptions.Item>
+                                            </Descriptions>
+                                            {plantPage.Content ? (
+                                                <>
+                                                    <Title level={5}>Описание: </Title>
+                                                    <div className="card-plant-tabs__plant-content">
+                                                        <ReactMarkdown
+                                                            transformImageUri={
+                                                                function (src) {
+                                                                    src = `${process.env.REACT_APP_BACKEND}${src}`
+                                                                    return src
+                                                                }
+                                                            }
+                                                            transformLinkUri={
+                                                                function (href) {
+                                                                    href = `${process.env.REACT_APP_BACKEND}${href}`
+                                                                    return href
+                                                                }
+                                                            }
+                                                        >
+                                                            {plantPage.Content}
+                                                        </ReactMarkdown>
+                                                    </div>
+                                                    <Divider/>
+                                                </>
+                                            ) : false }
+                                            <Title level={5}>Блоки недель: </Title>
+                                            <div className="card-plant-tabs__weeks">
+                                                {plantPage.weeks ? (
+                                                    plantPage.weeks.map((data, index) => (
+                                                        <div className="week" key={data.id}>
+                                                            <div className="week__title">
+                                                                <WeekIndex weekIndex={index} />
+                                                            </div>
+                                                            <div className="week__description">
+                                                                <WeekDescription weekId={data.id} />
+                                                            </div>
+                                                            <div className="week__days">
+                                                                {
+                                                                    data.days.map((days_data, dayIndex) => (
+                                                                        <Popover
+                                                                            trigger="click"
+                                                                            placement="top"
+                                                                            key={days_data.id}
+                                                                            content={!days_data.passed ?
+                                                                                (
+                                                                                    <div className={'popover-content'}>
+                                                                                        <PassDayButton weekId={data.id} dayId={days_data.id} />
+                                                                                        {/* If this week is last */}
+                                                                                        {(index + 1) === plantPage.weeks.length ? (
+                                                                                            <DeleteDayButton weekId={data.id} dayId={days_data.id} />
+                                                                                        ) : false }
+                                                                                        <SelectTags weekId={data.id} dayId={days_data.id} />
+                                                                                        <EditHumidity weekId={data.id} dayId={days_data.id} />
+                                                                                        <DayDescription weekId={data.id} dayId={days_data.id} />
+                                                                                    </div>
+                                                                                ) : null
+                                                                            }
+                                                                        >
+                                                                            <div className={days_data.passed ? 'day --passed' : 'day'}>
+                                                                                <div className="day__title">
+                                                                                    <DayIndex thisDayIndex={dayIndex} thisDayId={days_data.id} thisWeekIndex={index}/>
+                                                                                </div>
+                                                                                <div className="day__date">
+                                                                                    {
+                                                                                        formatDate(days_data.date)
+                                                                                    }
+                                                                                </div>
+                                                                                <div className="day__humidity">
+                                                                                    {days_data.humidity ? `Влажность: ${days_data.humidity}%` : `Влажность: 0%`}
+                                                                                </div>
+                                                                                <div className="day__tags">
+                                                                                    Теги:
+                                                                                    {days_data.tags ? (
+                                                                                        days_data.tags.data.map((tags_data) => (
+                                                                                            <div className="tag" key={tags_data.id}>
+                                                                                                <div className="tag__name">
+                                                                                                    {tags_data.attributes.name}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))
+                                                                                    ) : false}
+                                                                                </div>
+                                                                                <div className="day__description">
+                                                                                    {days_data.description ? `Описание: ${days_data.description}` : `Описание: отсутствует`}
+                                                                                </div>
+                                                                            </div>
+                                                                        </Popover>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                            {/* If this week is last */}
+                                                            {(index + 1) === plantPage.weeks.length ? (
+                                                                <>
+                                                                    <AddOneDayButton weekIndex={index} />
+                                                                    <AddSevenDaysButton weekIndex={index} />
+                                                                </>
+                                                            ) : false }
+                                                        </div>
+                                                    ))
+                                                ) : false}
+                                            </div>
+                                            <AddWeekButton />
+                                        </div>
+                                    ),
+                                },
+                                {
+                                    key: '2',
+                                    label: (
+                                        <div className="card-plant-tabs__label">
+                                            <CalendarOutlined />
+                                            Календарь
+                                        </div>
+                                    ),
+                                    children: (
+                                        <div className="card-plant-tabs__content">
+                                            <Calendar className="card-plant-tabs__calendar" cellRender={cellRender} />
+                                        </div>
+                                    ),
+                                },
+                            ]}
+                        />
+                    </>
+                )}
+            </Card>
+        </>
     );
 }
 

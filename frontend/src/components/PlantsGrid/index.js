@@ -104,30 +104,37 @@ const PlantsGrid = () => {
                             {plants.map(({ id, attributes }) => (
                                 <Link className="app-plant-item" key={id} to={'/plants/' + id}>
                                     <div className="app-plant-item__content">
+                                        <div className="app-plant-item__days">
+                                            {countDays(attributes.weeks)}
+                                            <span>дней</span>
+                                        </div>
                                         <div className="app-plant-item__name">
                                             {attributes.Name}
                                         </div>
-                                        <div className="app-plant-item__thumb">
-                                            <div className="app-plant-item__days">
-                                                {countDays(attributes.weeks)} дней
-                                            </div>
-                                            <div className="app-plant-item__date">
-                                                {formatDate(attributes.updatedAt)}
-                                            </div>
+                                        <div className="app-plant-item__date">
+                                            Последнее обновление:
+                                            <span>{formatDate(attributes.updatedAt)}</span>
                                         </div>
-                                        <div className="app-plant-item__categories">
-                                            {
-                                                attributes.categories.data.length ? attributes.categories.data.map((cat_data) => (
-                                                    <Tag bordered={false} key={cat_data.id}>
-                                                        {cat_data.attributes.Name}
-                                                    </Tag>
-                                                )) : (
-                                                    <Tag bordered={false}>
-                                                        Без категории
-                                                    </Tag>
-                                                )
-                                            }
-                                        </div>
+                                        {attributes.categories ? (
+                                            <div className="app-plant-item__categories">
+                                                <div className="app-plant-item__categories__title">
+                                                    Категории:
+                                                </div>
+                                                <div className="app-plant-item__categories__grid">
+                                                    {
+                                                        attributes.categories.data.length ? attributes.categories.data.map((cat_data) => (
+                                                            <Tag bordered={false} key={cat_data.id}>
+                                                                {cat_data.attributes.Name}
+                                                            </Tag>
+                                                        )) : (
+                                                            <Tag bordered={false}>
+                                                                Без категории
+                                                            </Tag>
+                                                        )
+                                                    }
+                                                </div>
+                                            </div>
+                                        ) : false}
                                     </div>
                                 </Link>
                             ))}
