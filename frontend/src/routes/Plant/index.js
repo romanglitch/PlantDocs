@@ -5,6 +5,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../../helpers";
 import { formatDate, countDays } from "../../publicHelpers";
+import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 
 import {
     Spin,
@@ -781,6 +783,7 @@ const Plant = () => {
                                                                     return href
                                                                 }
                                                             }
+                                                            remarkPlugins={[remarkGfm, remarkBreaks]}
                                                         >
                                                             {plantPage.Content}
                                                         </ReactMarkdown>

@@ -271,3 +271,32 @@
 .week__buttons > button:nth-child(2) {
     margin-right: auto;
 }
+
+.card-plant-tabs__plant-content {
+    display: grid;
+    grid-gap: 24px;
+    font-size: 16px;
+}
+
+.card-plant-tabs__plant-content ul {
+    list-style: none;
+    display: grid;
+    grid-gap: 5px;
+}
+
+.card-plant-tabs__plant-content li {
+    padding-left: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.card-plant-tabs__plant-content li:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #1677ff;
+}
