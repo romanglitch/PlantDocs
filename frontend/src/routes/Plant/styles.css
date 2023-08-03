@@ -250,3 +250,26 @@
 .day.--passed .tag {
     pointer-events: auto;
 }
+
+.popover-content__grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.popover-content__grid > button {
+    width: 100%;
+}
+
+.week__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    gap: 24px;
+}
+
+.week__buttons > button:nth-child(2) {
+    margin-right: auto;
+}

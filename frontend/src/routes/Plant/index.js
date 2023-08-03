@@ -21,7 +21,7 @@ import {
     Tag,
     Tooltip
 } from "antd";
-import { SmileOutlined, CalendarOutlined, FileTextOutlined, LeftOutlined } from '@ant-design/icons';
+import { SmileOutlined, CalendarOutlined, FileTextOutlined, LeftOutlined, PlusOutlined, BlockOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
@@ -97,8 +97,12 @@ const Plant = () => {
     };
 
     const DeleteDayButton = (data) => {
+        const [IsDeleteLoading, setIsDeleteLoading] = useState(false);
+
         let onClickEvent = (e) => {
             e.preventDefault()
+
+            setIsDeleteLoading(true)
 
             const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
             const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
@@ -128,6 +132,7 @@ const Plant = () => {
                     }
                 }).then(function (response) {
                     setPlantPage(response.data.data.attributes)
+                    setIsDeleteLoading(false)
                 }).catch(function (error) {
                     console.log(error);
                 });
@@ -136,13 +141,16 @@ const Plant = () => {
 
         return (
             <Popconfirm
-                title="Удалить день ?"
+                title="Удалить день"
+                description="Вы действительно хотите удалить день ?"
                 onConfirm={onClickEvent}
                 onCancel={e => e.preventDefault()}
                 okText="Да"
                 cancelText="Нет"
             >
-                <button>Удалить день</button>
+                <Button type="primary" danger loading={IsDeleteLoading}>
+                    Удалить день
+                </Button>
             </Popconfirm>
         )
     };
@@ -260,10 +268,9 @@ const Plant = () => {
         }
 
         return (
-            <Button type="primary" danger onClick={onClickEvent} loading={IsPassLoading}>
+            <Button type="primary" onClick={onClickEvent} loading={IsPassLoading}>
                 Закрыть день
             </Button>
-            // <button onClick={onClickEvent}>Закрыть день {IsPassLoading ? (<Spin size={'small'} />) : false}</button>
         )
     };
 
@@ -352,9 +359,14 @@ const Plant = () => {
     };
 
     const AddWeekButton = () => {
+        const [IsAddWeekLoading, setIsAddWeekLoading] = useState(false);
+
         const {weeks} = plantPage
 
         const onClickEvent = (e) => {
+            e.preventDefault()
+            setIsAddWeekLoading(true)
+
             const newDaysDate = (addDaysNumber) => {
                 const lastWeek = weeks.find(item => item.days.length !== 0)
                 const lastWeekDays = lastWeek.days
@@ -405,26 +417,30 @@ const Plant = () => {
                 }
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
+                setIsAddWeekLoading(false)
             }).catch(function (error) {
                 console.log(error);
             });
         }
 
         return (
-            <>
-                <button className="test-btn" onClick={onClickEvent}>
-                    Добавить новую неделю
-                </button>
-            </>
+            <Button type="primary" loading={IsAddWeekLoading} icon={<BlockOutlined />} onClick={onClickEvent}>
+                Добавить новую неделю
+            </Button>
         )
     };
 
     const AddOneDayButton = (data) => {
+        const [IsAddOneDayLoading, setIsAddOneDayLoading] = useState(false);
+
         const {weeks} = plantPage
 
         const onClickEvent = (e) => {
+            setIsAddOneDayLoading(true)
+
             const newDaysDate = (addDaysNumber) => {
-                const lastWeekDays = weeks[weeks.length - 1].days
+                const lastWeek = weeks.find(item => item.days.length !== 0)
+                const lastWeekDays = lastWeek.days
                 const lastDayDate = new Date(lastWeekDays[lastWeekDays.length - 1].date)
 
                 lastDayDate.setDate(lastDayDate.getDate() + addDaysNumber)
@@ -450,26 +466,29 @@ const Plant = () => {
                 }
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
+                setIsAddOneDayLoading(false)
             }).catch(function (error) {
                 console.log(error);
             });
         }
 
         return (
-            <>
-                <button className="test-btn" onClick={onClickEvent}>
-                    Добавить 1 день
-                </button>
-            </>
+            <Button type="primary" loading={IsAddOneDayLoading} icon={<PlusOutlined />} onClick={onClickEvent}>
+                1 день
+            </Button>
         )
     };
 
     const AddSevenDaysButton = (data) => {
+        const [IsAddSevenDayLoading, setIsAddSevenDayLoading] = useState(false);
         const {weeks} = plantPage
 
         const onClickEvent = (e) => {
+            setIsAddSevenDayLoading(true)
+
             const newDaysDate = (addDaysNumber) => {
-                const lastWeekDays = weeks[weeks.length - 1].days
+                const lastWeek = weeks.find(item => item.days.length !== 0)
+                const lastWeekDays = lastWeek.days
                 const lastDayDate = new Date(lastWeekDays[lastWeekDays.length - 1].date)
 
                 lastDayDate.setDate(lastDayDate.getDate() + addDaysNumber)
@@ -514,17 +533,16 @@ const Plant = () => {
                 }
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
+                setIsAddSevenDayLoading(false)
             }).catch(function (error) {
                 console.log(error);
             });
         }
 
         return (
-            <>
-                <button className="test-btn" onClick={onClickEvent}>
-                    Добавить 7 дней
-                </button>
-            </>
+            <Button type="primary" loading={IsAddSevenDayLoading} icon={<PlusOutlined />} onClick={onClickEvent}>
+                7 дней
+            </Button>
         )
     };
 
@@ -554,10 +572,10 @@ const Plant = () => {
 
         switch (index) {
             case 1:
-                indexTitle = `Росток`
+                indexTitle = `Малой`
                 break;
             case 2:
-                indexTitle = `Каска`
+                indexTitle = `Шлем`
                 break;
             case 13:
                 indexTitle = `Водопад`
@@ -575,8 +593,6 @@ const Plant = () => {
         return indexTitle
     }
 
-
-    //
     return (
         <>
             <Card className="app-card card-plant">
@@ -650,13 +666,16 @@ const Plant = () => {
                                                                             content={!days_data.passed ?
                                                                                 (
                                                                                     <div className={'popover-content'}>
-                                                                                        {/* If this week is last && If this day is last */}
-                                                                                        {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
-                                                                                            <DeleteDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                        ) : false }
                                                                                         <SelectTags weekId={data.id} dayId={days_data.id} />
                                                                                         <EditHumidity weekId={data.id} dayId={days_data.id} />
-                                                                                        <PassDayButton weekId={data.id} dayId={days_data.id} />
+                                                                                        <div className="popover-content__grid">
+                                                                                            {/* If this week is last && If this day is last */}
+                                                                                            {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
+                                                                                                <DeleteDayButton weekId={data.id} dayId={days_data.id} />
+                                                                                            ) : false }
+
+                                                                                            <PassDayButton weekId={data.id} dayId={days_data.id} />
+                                                                                        </div>
                                                                                     </div>
                                                                                 ) : null
                                                                             }
@@ -697,18 +716,18 @@ const Plant = () => {
                                                             </div>
                                                             {/* If this week is last */}
                                                             {(index + 1) === plantPage.weeks.length ? (
-                                                                <>
+                                                                <div className="week__buttons">
                                                                     <AddOneDayButton weekIndex={index} />
                                                                     <AddSevenDaysButton weekIndex={index} />
-                                                                </>
+                                                                    {plantPage.weeks.length <= 14 ? (
+                                                                        <AddWeekButton />
+                                                                    ) : false }
+                                                                </div>
                                                             ) : false }
                                                         </div>
                                                     ))
                                                 ) : false}
                                             </div>
-                                            {plantPage.weeks.length <= 14 ? (
-                                                <AddWeekButton />
-                                            ) : false }
                                         </div>
                                     ),
                                 },
