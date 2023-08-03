@@ -140,3 +140,5 @@
     margin: -10px -24px 24px -24px;
     padding: 10px 24px 0;
 }
+
+.day.--archived {opacity: .4;transform: scale(.94);}

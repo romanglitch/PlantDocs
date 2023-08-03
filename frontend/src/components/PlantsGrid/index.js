@@ -139,7 +139,7 @@ const PlantsGrid = () => {
                                 </Link>
                             ))}
                         </div>
-                    ) : error }
+                    ) : 'Растений не найдено' }
                 </>
             )}
         </div>

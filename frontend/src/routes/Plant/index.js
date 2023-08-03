@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from "react";
 import ReactMarkdown from 'react-markdown'
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../../helpers";
 import { formatDate, countDays } from "../../publicHelpers";
@@ -17,7 +17,6 @@ import {
     Popconfirm,
     Input,
     InputNumber,
-    FloatButton,
     Tag
 } from "antd";
 import { SmileOutlined, CalendarOutlined, FileTextOutlined, LeftOutlined } from '@ant-design/icons';
@@ -31,6 +30,8 @@ import './styles.css'
 dayjs.locale('ru-ru');
 
 const Plant = () => {
+    const navigate = useNavigate();
+
     const [isLoading, setIsLoading] = useState(true);
     const [plantPage, setPlantPage] = useState([]);
     const [tags, setTags] = useState([]);
@@ -41,14 +42,17 @@ const Plant = () => {
         axios
             .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags`)
             .then(({ data }) => setPlantPage(data.data.attributes))
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                // console.log(error)
+                navigate('/')
+            });
 
         axios
             .get(`${process.env.REACT_APP_BACKEND}/api/tags`)
             .then(({ data }) => setTags(data.data))
             .catch((error) => console.log(error))
             .finally(() => setIsLoading(false));
-    }, [id]);
+    }, [id, navigate]);
 
     const dateCellRender = (value) => {
         const {weeks} = plantPage
@@ -583,7 +587,6 @@ const Plant = () => {
                     </div>
                 ) : (
                     <>
-                        <FloatButton.BackTop shape="square" visibilityHeight={100} />
                         <div className="app-plant-item app-plant-item_card-plant">
                             <div className="app-plant-item__content">
                                 <div className="app-plant-item__days">{countDays(plantPage.weeks)}<span>дней</span></div>
@@ -649,8 +652,8 @@ const Plant = () => {
                                                                                 (
                                                                                     <div className={'popover-content'}>
                                                                                         <PassDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                        {/* If this week is last */}
-                                                                                        {(index + 1) === plantPage.weeks.length ? (
+                                                                                        {/* If this week is last && If this day is last */}
+                                                                                        {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
                                                                                             <DeleteDayButton weekId={data.id} dayId={days_data.id} />
                                                                                         ) : false }
                                                                                         <SelectTags weekId={data.id} dayId={days_data.id} />
@@ -660,7 +663,7 @@ const Plant = () => {
                                                                                 ) : null
                                                                             }
                                                                         >
-                                                                            <div className={days_data.passed ? 'day --passed' : 'day'}>
+                                                                            <div className={`day${days_data.passed ? ' --passed' : ''}${(dayIndex + 1) === data.days.length ? ' --last' : ''}`}>
                                                                                 <div className="day__title">
                                                                                     <DayIndex thisDayIndex={dayIndex} thisDayId={days_data.id} thisWeekIndex={index}/>
                                                                                 </div>
