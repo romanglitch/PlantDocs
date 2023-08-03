@@ -13,7 +13,6 @@ import {
     Card,
     Button,
     Tabs,
-    Badge,
     Calendar,
     Popover,
     Select,
@@ -64,32 +63,47 @@ const Plant = () => {
         const {weeks} = plantPage
 
         return (
-            <ul className="events">
-                <>
-                    {
-                        weeks.map(function (weekItem) {
-                            const dayId = weekItem.days.findIndex(x => x.date === value.toISOString().split('T')[0])
-                            const dayItem = weekItem.days[dayId]
+            <div className="app-calendar-item">
+                {
+                    weeks.map(function (weekItem) {
+                        const dayId = weekItem.days.findIndex(x => x.date === value.toISOString().split('T')[0])
+                        const dayItem = weekItem.days[dayId]
 
-                            if (dayItem) {
-                                return (
-                                    <li className={dayItem.passed ? 'calendar-day-info --passed' : 'calendar-day-info'} key={dayItem.id}>
-                                        {dayItem.humidity ? (<Badge status={'success'} text={'Влажность: ' + dayItem.humidity + '%'} />) : false}
-                                        {dayItem.tags.data.length ? dayItem.tags.data.map((tagItem) => {
-                                            return (
-                                                <Badge key={tagItem.id} status={'default'} text={tagItem.attributes.name} />
-                                            )
-                                        }) : false }
-                                        {dayItem.passed ? (<Badge status={'success'} text={'День закрыт'} />) : false}
-                                    </li>
-                                )
-                            }
+                        if (dayItem) {
+                            return (
+                                <div className={`app-calendar-day ${dayItem.passed ? '--passed' : ''}`} key={dayItem.id}>
+                                    <div className="app-calendar-item__humidity">
+                                        <div className="app-calendar-item__humidity__title">
+                                            Влажность:
+                                        </div>
+                                        <div className="app-calendar-item__humidity__value">
+                                            {dayItem.humidity ? `${dayItem.humidity}` : `0`}
+                                            <small>%</small>
+                                        </div>
+                                    </div>
+                                    {dayItem.tags.data.length ? (
+                                        <div className="app-calendar-item__tags">
+                                            {dayItem.tags.data.map((tagItem) => {
+                                                return (
+                                                    <Tooltip placement="top" title={tagItem.attributes.name} key={tagItem.id}>
+                                                        <div className={`tag ${tagItem.id === 4 ? '--selected' : ''}`}>
+                                                            {tagItem.attributes.icon.data ? (
+                                                                <img className="tag__icon" src={`${process.env.REACT_APP_BACKEND}${tagItem.attributes.icon.data.attributes.url}`} alt={tagItem.attributes.name}/>
+                                                            ) : false}
+                                                        </div>
+                                                    </Tooltip>
+                                                )
+                                            })}
+                                        </div>
+                                    ) : false }
+                                </div>
+                            )
+                        }
 
-                            return false
-                        })
-                    }
-                </>
-            </ul>
+                        return false
+                    })
+                }
+            </div>
         )
     };
 
