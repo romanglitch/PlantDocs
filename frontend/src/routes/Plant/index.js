@@ -261,9 +261,10 @@ const Plant = () => {
                 }
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
-                setIsPassLoading(false)
             }).catch(function (error) {
                 console.log(error);
+            }).finally(function () {
+                setIsPassLoading(false)
             });
         }
 
@@ -275,6 +276,8 @@ const Plant = () => {
     };
 
     const EditHumidity = (data) => {
+        // const [IsHumLoading, setIsHumLoading] = useState(false);
+
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
         const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
@@ -282,27 +285,29 @@ const Plant = () => {
         const {weeks} = plantPage
 
         let onBlurEvent = (e) => {
+            // setIsHumLoading(true)
+
             if (weeks[weekIndex].days[dayIndex].humidity !== e.target.value) {
                 weeks[weekIndex].days[dayIndex].humidity = e.target.value
 
-                setTimeout(function () {
-                    axios({
-                        method: 'put',
-                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
-                        headers: {
-                            'Authorization': `Bearer ${getToken()}`
-                        },
+                axios({
+                    method: 'put',
+                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    },
+                    data: {
                         data: {
-                            data: {
-                                weeks: weeks
-                            }
+                            weeks: weeks
                         }
-                    }).then(function (response) {
-                        setPlantPage(response.data.data.attributes)
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                }, 1000)
+                    }
+                }).then(function (response) {
+                    setPlantPage(response.data.data.attributes)
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    // setIsHumLoading(false)
+                });
             }
         }
 
@@ -367,10 +372,12 @@ const Plant = () => {
             e.preventDefault()
             setIsAddWeekLoading(true)
 
+            let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
+                lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
+                lastWeekDay = lastWeekByDays.days[lastWeekByDays.days.length - 1]
+
             const newDaysDate = (addDaysNumber) => {
-                const lastWeek = weeks.find(item => item.days.length !== 0)
-                const lastWeekDays = lastWeek.days
-                const lastDayDate = new Date(lastWeekDays[lastWeekDays.length - 1].date)
+                let lastDayDate = new Date(lastWeekDay.date)
 
                 lastDayDate.setDate(lastDayDate.getDate() + addDaysNumber)
 
@@ -438,10 +445,12 @@ const Plant = () => {
         const onClickEvent = (e) => {
             setIsAddOneDayLoading(true)
 
+            let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
+                lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
+                lastWeekDay = lastWeekByDays.days[lastWeekByDays.days.length - 1]
+
             const newDaysDate = (addDaysNumber) => {
-                const lastWeek = weeks.find(item => item.days.length !== 0)
-                const lastWeekDays = lastWeek.days
-                const lastDayDate = new Date(lastWeekDays[lastWeekDays.length - 1].date)
+                let lastDayDate = new Date(lastWeekDay.date)
 
                 lastDayDate.setDate(lastDayDate.getDate() + addDaysNumber)
 
@@ -486,10 +495,12 @@ const Plant = () => {
         const onClickEvent = (e) => {
             setIsAddSevenDayLoading(true)
 
+            let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
+                lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
+                lastWeekDay = lastWeekByDays.days[lastWeekByDays.days.length - 1]
+
             const newDaysDate = (addDaysNumber) => {
-                const lastWeek = weeks.find(item => item.days.length !== 0)
-                const lastWeekDays = lastWeek.days
-                const lastDayDate = new Date(lastWeekDays[lastWeekDays.length - 1].date)
+                let lastDayDate = new Date(lastWeekDay.date)
 
                 lastDayDate.setDate(lastDayDate.getDate() + addDaysNumber)
 
@@ -663,22 +674,21 @@ const Plant = () => {
                                                                             trigger="click"
                                                                             placement="top"
                                                                             key={days_data.id}
-                                                                            content={!days_data.passed ?
-                                                                                (
-                                                                                    <div className={'popover-content'}>
-                                                                                        <SelectTags weekId={data.id} dayId={days_data.id} />
-                                                                                        <EditHumidity weekId={data.id} dayId={days_data.id} />
-                                                                                        <div className="popover-content__grid">
-                                                                                            {/* If this week is last && If this day is last */}
-                                                                                            {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
-                                                                                                <DeleteDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                            ) : false }
-
+                                                                            content={(
+                                                                                <div className={'popover-content'}>
+                                                                                    <SelectTags weekId={data.id} dayId={days_data.id} />
+                                                                                    <EditHumidity weekId={data.id} dayId={days_data.id} />
+                                                                                    <div className="popover-content__grid">
+                                                                                        {/* If this week is last && If this day is last */}
+                                                                                        {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
+                                                                                            <DeleteDayButton weekId={data.id} dayId={days_data.id} />
+                                                                                        ) : false }
+                                                                                        {days_data.passed ? false : (
                                                                                             <PassDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                        </div>
+                                                                                        )}
                                                                                     </div>
-                                                                                ) : null
-                                                                            }
+                                                                                </div>
+                                                                            )}
                                                                         >
                                                                             <div className={`day${days_data.passed ? ' --passed' : ''}${(dayIndex + 1) === data.days.length ? ' --last' : ''}`}>
                                                                                 <div className="day__title">

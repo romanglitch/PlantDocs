@@ -198,8 +198,8 @@
 }
 
 .tag {
-    width: 18px;
-    height: 18px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -226,8 +226,6 @@
 .day.--passed {
     background: #1b7aff;
     color: #fff;
-    pointer-events: none;
-    cursor: default;
 }
 
 .day.--passed .day__title__date {
