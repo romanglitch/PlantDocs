@@ -29,6 +29,8 @@ import './styles.css'
 
 dayjs.locale('ru-ru');
 
+const { TextArea } = Input;
+
 const Plant = () => {
     const navigate = useNavigate();
 
@@ -358,9 +360,7 @@ const Plant = () => {
         }
 
         return (
-            <>
-                <Input onBlur={onBlurEvent} defaultValue={weeks[weekIndex].description} addonBefore="Описание недели" placeholder="Описание недели" />
-            </>
+            <TextArea onBlur={onBlurEvent} defaultValue={weeks[weekIndex].description} placeholder="Описание недели" autoSize />
         )
     };
 
@@ -760,6 +760,9 @@ const Plant = () => {
                                     ),
                                 } : false
                             ]}
+                            onTabClick={function () {
+                                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+                            }}
                         />
                     </>
                 )}
