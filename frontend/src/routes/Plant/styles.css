@@ -10,9 +10,8 @@
 .week__title {
     font-size: 24px;
     font-weight: 500;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 25px;
-    margin-bottom: 25px;
+    margin-bottom: 8px;
+    color: #1b7aff;
 }
 
 .week__days {
@@ -23,7 +22,8 @@
 }
 
 .day {
-    border: 1px solid #f0f0f0;
+    background: #fff;
+    border: 1px solid #e1eeff;
     padding: 20px;
     border-radius: 8px;
     cursor: pointer;
@@ -31,11 +31,6 @@
     grid-gap: 10px;
     align-content: flex-start;
     transition: all .33s ease;
-}
-
-.day > *:not(:last-child) {
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 10px;
 }
 
 .popover-content {
@@ -48,7 +43,8 @@
 }
 
 .day.ant-popover-open {
-    box-shadow: 0 5px 20px 6px rgb(0 0 0 / 8%);
+    box-shadow: 0 5px 20px 6px rgb(27 122 255 / 16%);
+    transform: scale(.98);
 }
 
 .day.--deleted {
@@ -56,17 +52,8 @@
     inset 0 0 0 2px #ef1b1b;
 }
 
-.day.--passed {
-    background: #21d388;
-    color: #fff;
-    border-color: #21d388;
-    font-weight: 500;
-    cursor: default;
-    pointer-events: none;
-}
-
 .week__description {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .test-btn {
@@ -141,4 +128,125 @@
     padding: 10px 24px 0;
 }
 
-.day.--archived {opacity: .4;transform: scale(.94);}
+.day.--archived {
+    opacity: .4;
+    transform: scale(.94);
+}
+
+.week {
+    background: linear-gradient(45deg, rgb(22 119 255 / 3%), transparent);
+    border-radius: 8px;
+    border: 1px solid rgb(22 119 255 / 3%);
+    padding: 24px;
+}
+
+.day__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.day__title__text {
+    font-size: 18px;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.day__title__date {
+    background: #1b7aff;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 0 5px;
+}
+
+.day__humidity {
+    background: rgb(22 119 255 / 3%);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
+    line-height: 28px;
+}
+
+.day__humidity__title {
+    font-weight: 300;
+    font-size: 14px;
+    color: #1b7aff;
+}
+
+.day__humidity__value {
+    font-size: 48px;
+    font-weight: 400;
+    color: #1b7aff;
+}
+
+.day__humidity__value small {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.day__tags {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tag__icon {
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+    display: block;
+}
+
+.select-tags-option__icon {
+    width: 18px;
+    height: 18px;
+}
+
+.select-tags-option {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.day.--passed {
+    background: #1b7aff;
+    color: #fff;
+    pointer-events: none;
+    cursor: default;
+}
+
+.day.--passed .day__title__date {
+    background: #fff;
+    color: #000;
+}
+
+.day.--passed .day__humidity {
+    background: rgb(180 211 255 / 5%);
+}
+
+.day.--passed .day__humidity__title {
+    color: #fff;
+}
+
+.day.--passed .day__humidity__value {
+    color: #fff;
+}
+
+.day.--passed .tag {
+    pointer-events: auto;
+}
