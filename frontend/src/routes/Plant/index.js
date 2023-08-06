@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown'
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -37,6 +36,7 @@ const { TextArea } = Input;
 const Plant = () => {
     const navigate = useNavigate();
 
+    const [calFilter, setCalFilter] = useState([])
     const [isLoading, setIsLoading] = useState(true);
     const [plantPage, setPlantPage] = useState([]);
     const [tags, setTags] = useState([]);
@@ -54,10 +54,60 @@ const Plant = () => {
 
         axios
             .get(`${process.env.REACT_APP_BACKEND}/api/tags?populate[0]=icon`)
-            .then(({ data }) => setTags(data.data))
+            .then(({ data }) => {
+                setTags(data.data)
+            })
             .catch((error) => console.log(error))
             .finally(() => setIsLoading(false));
     }, [id, navigate]);
+
+    const CalendarFilter = () => {
+        const selectOptions = [];
+        let isChanged = false
+        let currentSelected = calFilter
+
+        let onChangeEvent = (values) => {
+            currentSelected = values
+            isChanged = true
+        }
+
+        let onMouseLeave = () => {
+            if (isChanged) {
+                setCalFilter(currentSelected)
+                isChanged = false
+            }
+        }
+
+        tags.forEach(function (tagItem) {
+            selectOptions.push({
+                label: (
+                    <div className="select-tags-option">
+                        {tagItem.attributes.icon.data ? (
+                            <img className="select-tags-option__icon" src={`${process.env.REACT_APP_BACKEND}${tagItem.attributes.icon.data.attributes.url}`} alt={tagItem.attributes.name}/>
+                        ) : false}
+                        {tagItem.attributes.name}
+                    </div>
+                ),
+                value: tagItem.id,
+            });
+        })
+
+        return (
+            <Select
+                className="app-calendar-select"
+                allowClear
+                mode="multiple"
+                style={{
+                    width: '320px',
+                }}
+                placeholder="Фильтр"
+                defaultValue={calFilter}
+                options={selectOptions}
+                onChange={onChangeEvent}
+                onMouseLeave={onMouseLeave}
+            />
+        )
+    }
 
     const dateCellRender = (value) => {
         const {weeks} = plantPage
@@ -70,8 +120,10 @@ const Plant = () => {
                         const dayItem = weekItem.days[dayId]
 
                         if (dayItem) {
+                            let isDayFilter = dayItem.tags.data.filter(tag => calFilter.find(id => id === tag.id))
+
                             return (
-                                <div className={`app-calendar-day ${dayItem.passed ? '--passed' : ''}`} key={dayItem.id}>
+                                <div className={`app-calendar-day ${dayItem.passed ? '--passed' : ''} ${isDayFilter.length ? '--filter-day' : ''}`} key={dayItem.id}>
                                     <div className="app-calendar-item__humidity">
                                         <div className="app-calendar-item__humidity__title">
                                             Влажность:
@@ -82,11 +134,11 @@ const Plant = () => {
                                         </div>
                                     </div>
                                     {dayItem.tags.data.length ? (
-                                        <div className="app-calendar-item__tags">
+                                        <div className={`app-calendar-item__tags ${calFilter.length ? '--filter-active' : '' }`}>
                                             {dayItem.tags.data.map((tagItem) => {
                                                 return (
                                                     <Tooltip placement="top" title={tagItem.attributes.name} key={tagItem.id}>
-                                                        <div className={`tag ${tagItem.id === 4 ? '--selected' : ''}`}>
+                                                        <div className={`tag app-calendar-tag ${calFilter.find(x => x === tagItem.id) ? '--filtered' : '' }`}>
                                                             {tagItem.attributes.icon.data ? (
                                                                 <img className="tag__icon" src={`${process.env.REACT_APP_BACKEND}${tagItem.attributes.icon.data.attributes.url}`} alt={tagItem.attributes.name}/>
                                                             ) : false}
@@ -767,7 +819,11 @@ const Plant = () => {
                                     ),
                                     children: (
                                         <div className="card-plant-tabs__content">
-                                            <Calendar className="card-plant-tabs__calendar" cellRender={cellRender} />
+                                            <CalendarFilter />
+                                            <Calendar
+                                                className={`card-plant-tabs__calendar ${calFilter.length ? '--filter-active' : ''}`}
+                                                cellRender={cellRender}
+                                            />
                                         </div>
                                     ),
                                 },

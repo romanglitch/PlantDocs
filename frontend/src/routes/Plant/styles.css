@@ -87,8 +87,9 @@
 }
 
 .card-plant-tabs__calendar .ant-picker-cell .ant-picker-cell-inner .ant-picker-calendar-date-content {
-    height: 145px;
+    height: 175px;
     padding-bottom: 5px;
+    overflow: visible;
 }
 
 .app-plant-item__home-link {
@@ -203,6 +204,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all .33s ease;
 }
 
 .tag__icon {
@@ -278,7 +280,8 @@
     font-size: 16px;
 }
 
-.card-plant-tabs__plant-content ul {
+.card-plant-tabs__plant-content ul,
+.card-plant-tabs__plant-content ol {
     list-style: none;
     display: grid;
     grid-gap: 5px;
@@ -306,6 +309,8 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
+    flex-wrap: wrap;
+    transition: all .33s ease;
 }
 
 .app-calendar-day {
@@ -317,12 +322,14 @@
     display: grid;
     grid-gap: 10px;
     align-content: flex-start;
+    box-shadow: 0 5px 17px -5px rgb(0 0 0 / 15%);
     transition: all .33s ease;
 }
 
 .app-calendar-day.--passed {
     background: #1b7aff;
     color: #fff;
+    border-color: #1b7aff;
 }
 
 .app-calendar-item__humidity {
@@ -369,10 +376,44 @@
     border: 3px solid #1e5bb1;
 }
 
-.tag.--selected {
-    background: #fff;
-    border-radius: 8px;
-    width: 38px;
-    height: 38px;
-    padding: 3px;
+/*.tag.--selected {*/
+/*    background: #fff;*/
+/*    border-radius: 8px;*/
+/*    width: 38px;*/
+/*    height: 38px;*/
+/*    padding: 3px;*/
+/*}*/
+
+.app-calendar-select {
+    margin-bottom: -44px;
+    display: block;
+}
+
+.app-calendar-item__tags.--filter-active .app-calendar-tag {
+    filter: blur(5px);
+    opacity: .6;
+    pointer-events: none;
+}
+
+.app-calendar-item__tags.--filter-active .app-calendar-tag.--filtered {
+    filter: blur(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.app-calendar-day.--filter-day {
+    box-shadow: 1px 6px 10px 1px rgb(82 82 82 / 42%);
+    border-color: #1b7aff;
+    transform: scale(1.07);
+}
+
+.ant-picker-calendar-date-value {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.card-plant-tabs__calendar.--filter-active .app-calendar-day:not(.--filter-day) {
+    opacity: .5;
+    filter: blur(2px);
 }
