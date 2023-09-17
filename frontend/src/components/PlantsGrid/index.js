@@ -17,9 +17,9 @@ const PlantsGrid = () => {
     const [error, setError] = useState(null);
     const [plants, setPlants] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [selectedTags, setSelectedTags] = useState(['All']);
+    const [selectedTags, setSelectedTags] = useState([0]);
 
-    let getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=image&populate[2]=weeks.days`;
+    let getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=weeks.days`;
 
     useEffect(() => {
         axios
@@ -68,13 +68,15 @@ const PlantsGrid = () => {
                 }
             })
         } else {
-            getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=image&populate[2]=weeks.days`
+            getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=weeks.days`
 
             axios
                 .get(getPlantsRequest)
                 .then(({ data }) => setPlants(data.data))
                 .catch((error) => setError(error));
         }
+
+        console.log(selectedTags)
     };
 
     return (
@@ -92,7 +94,7 @@ const PlantsGrid = () => {
                                     key={tag.id}
                                     checked={selectedTags.includes(tag)}
                                     onChange={(checked) => tagHandleChange(tag, checked)}
-                                    className="app-plants-tags__item"
+                                    className={`app-plants-tags__item`}
                                 >
                                     {tag.attributes.Name}
                                 </CheckableTag>

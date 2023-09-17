@@ -11,7 +11,9 @@ const Error = () => {
                 status="404"
                 title="Ну и что здесь ?...."
                 subTitle="Извините, но данной страницы не существует"
-                extra={<Button type="primary" href={'/'}>Вернуться на главную</Button>}
+                extra={
+                    <Button type="primary" href={'/'}>Вернуться на главную</Button>
+                }
             />
         </Card>
     );

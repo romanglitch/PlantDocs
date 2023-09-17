@@ -44,7 +44,6 @@
 
 .day.ant-popover-open {
     box-shadow: 0 5px 20px 6px rgb(27 122 255 / 16%);
-    transform: scale(.98);
 }
 
 .day.--deleted {
@@ -97,18 +96,6 @@
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
-}
-
-.app-plant-item__home-link > span:last-child {
-    display: none;
-}
-
-.app-plant-item__home-link:hover > span:last-child {
-    display: block;
-}
-
-.app-plant-item__home-link:hover > span:nth-child(2) {
-    display: none;
 }
 
 .app-plant-item__home-link .anticon {
@@ -376,14 +363,6 @@
     border: 3px solid #1e5bb1;
 }
 
-/*.tag.--selected {*/
-/*    background: #fff;*/
-/*    border-radius: 8px;*/
-/*    width: 38px;*/
-/*    height: 38px;*/
-/*    padding: 3px;*/
-/*}*/
-
 .app-calendar-select {
     margin-bottom: -44px;
     display: block;
@@ -416,4 +395,10 @@
 .card-plant-tabs__calendar.--filter-active .app-calendar-day:not(.--filter-day) {
     opacity: .5;
     filter: blur(2px);
+}
+
+.app-humidity-input-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 7px;
 }

@@ -16,14 +16,7 @@ const { Header, Content } = Layout;
 
 const App = () => {
     return (
-        <ConfigProvider
-            locale={ruRU}
-            theme={{
-                // token: {
-                //     colorPrimary: '#21D388',
-                // }
-            }}
-        >
+        <ConfigProvider locale={ruRU}>
             <Layout className="app-layout">
                 <Header className="app-header">
                     <AppHeader />

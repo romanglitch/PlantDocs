@@ -96,11 +96,12 @@ const Plant = () => {
             <Select
                 className="app-calendar-select"
                 allowClear
+                showSearch={false}
                 mode="multiple"
                 style={{
                     width: '320px',
                 }}
-                placeholder="Фильтр"
+                placeholder="Фильтр по тегам"
                 defaultValue={calFilter}
                 options={selectOptions}
                 onChange={onChangeEvent}
@@ -140,7 +141,7 @@ const Plant = () => {
                                                     <Tooltip placement="top" title={tagItem.attributes.name} key={tagItem.id}>
                                                         <div className={`tag app-calendar-tag ${calFilter.find(x => x === tagItem.id) ? '--filtered' : '' }`}>
                                                             {tagItem.attributes.icon.data ? (
-                                                                <img className="tag__icon" src={`${process.env.REACT_APP_BACKEND}${tagItem.attributes.icon.data.attributes.url}`} alt={tagItem.attributes.name}/>
+                                                                <img className="tag__icon" src={`${process.env.REACT_APP_BACKEND}${tagItem.attributes.icon.data.attributes.url}`} loading="lazy" alt={tagItem.attributes.name}/>
                                                             ) : false}
                                                         </div>
                                                     </Tooltip>
@@ -157,12 +158,12 @@ const Plant = () => {
                 }
             </div>
         )
-    };
+    }
 
     const cellRender = (current, info) => {
         if (info.type === 'date') return dateCellRender(current);
         return false;
-    };
+    }
 
     const DeleteDayButton = (data) => {
         const [IsDeleteLoading, setIsDeleteLoading] = useState(false);
@@ -186,25 +187,23 @@ const Plant = () => {
 
             thisDayElement.classList.add('--deleted')
 
-            setTimeout(() => {
-                axios({
-                    method: 'put',
-                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
-                    headers: {
-                        'Authorization': `Bearer ${getToken()}`
-                    },
+            axios({
+                method: 'put',
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
                     data: {
-                        data: {
-                            weeks: weeks
-                        }
+                        weeks: weeks
                     }
-                }).then(function (response) {
-                    setPlantPage(response.data.data.attributes)
-                    setIsDeleteLoading(false)
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            }, 1000);
+                }
+            }).then(function (response) {
+                setIsDeleteLoading(false)
+                setPlantPage(response.data.data.attributes)
+            }).catch(function (error) {
+                console.log(error);
+            });
         }
 
         return (
@@ -221,7 +220,7 @@ const Plant = () => {
                 </Button>
             </Popconfirm>
         )
-    };
+    }
 
     const SelectTags = (data) => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
@@ -285,6 +284,7 @@ const Plant = () => {
         return (
             <>
                 <Select
+                    showSearch={false}
                     mode="multiple"
                     allowClear
                     style={{
@@ -344,7 +344,7 @@ const Plant = () => {
     };
 
     const EditHumidity = (data) => {
-        // const [IsHumLoading, setIsHumLoading] = useState(false);
+        const [IsHumLoading, setIsHumLoading] = useState(false);
 
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
@@ -353,7 +353,7 @@ const Plant = () => {
         const {weeks} = plantPage
 
         let onBlurEvent = (e) => {
-            // setIsHumLoading(true)
+            setIsHumLoading(true)
 
             if (weeks[weekIndex].days[dayIndex].humidity !== e.target.value) {
                 weeks[weekIndex].days[dayIndex].humidity = e.target.value
@@ -374,14 +374,19 @@ const Plant = () => {
                 }).catch(function (error) {
                     console.log(error);
                 }).finally(function () {
-                    // setIsHumLoading(false)
+                    setIsHumLoading(false)
                 });
             }
         }
 
         return (
             <>
-                <InputNumber onBlur={onBlurEvent} addonBefore="Влажность %" min={0} max={100} defaultValue={weeks[weekIndex].days[dayIndex].humidity ? weeks[weekIndex].days[dayIndex].humidity : 0} />
+                <InputNumber onBlur={onBlurEvent} addonBefore={(
+                    <div className={'app-humidity-input-placeholder'}>
+                        <div>Влажность %</div>
+                        {IsHumLoading ? (<Spin size={"small"}/>) : false}
+                    </div>
+                )} min={0} max={100} defaultValue={weeks[weekIndex].days[dayIndex].humidity ? weeks[weekIndex].days[dayIndex].humidity : 0} />
             </>
         )
     };
@@ -688,7 +693,6 @@ const Plant = () => {
                                     <Link className="app-plant-item__home-link" to="/">
                                         <LeftOutlined />
                                         <span>{plantPage.Name}</span>
-                                        <span>К растениям</span>
                                     </Link>
                                 </div>
                                 <div className="app-plant-item__date">

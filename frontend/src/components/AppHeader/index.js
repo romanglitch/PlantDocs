@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "antd";
 import {
-    UserOutlined,
     LogoutOutlined,
     DashboardOutlined
 } from '@ant-design/icons';
@@ -47,12 +46,6 @@ const AppHeader = () => {
             <div className="app-header-grid__col">
                 {auth ? (
                     <div className="app-header-auth">
-                        <div className="app-header-auth__info">
-                            <UserOutlined className="app-header-auth__icon" />
-                            <div className="app-header-auth__username">
-                                {user.username}
-                            </div>
-                        </div>
                         <Button className="app-header-auth__button" type={'link'} href={`${process.env.REACT_APP_BACKEND}/admin`} target={'_blank'}>
                             <DashboardOutlined /> Панель управления
                         </Button>
