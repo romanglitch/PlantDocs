@@ -1,0 +1,34 @@
+.app-layout {
+    min-height: 100vh;
+}
+
+.app-footer {
+    padding: 0;
+    margin-top: 1em;
+}
+
+.app-layout__content {
+    padding: 1.2em;
+}
+
+.app-content {
+    display: grid;
+    align-content: flex-start;
+    gap: 1em;
+    height: 100%;
+}
+
+.app-page {
+    background: #fff;
+    padding: 20px 50px 20px;
+    height: 100vh;
+    border-radius: 8px;
+}
+
+.app-router {
+    padding: 25px 50px;
+}
+
+.app-view {
+    margin: auto;
+}

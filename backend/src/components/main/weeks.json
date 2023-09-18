@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_main_weeks",
+  "info": {
+    "displayName": "weeks",
+    "icon": "calendar",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "days": {
+      "displayName": "day",
+      "type": "component",
+      "repeatable": true,
+      "component": "main.day"
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

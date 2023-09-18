@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_main_days",
+  "info": {
+    "displayName": "day",
+    "icon": "clock",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "date": {
+      "required": true,
+      "type": "date"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::tag.tag"
+    },
+    "passed": {
+      "type": "boolean",
+      "default": false
+    },
+    "humidity": {
+      "type": "integer",
+      "max": 100,
+      "min": 0
+    }
+  }
+}
