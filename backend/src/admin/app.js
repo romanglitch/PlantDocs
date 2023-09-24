@@ -8,10 +8,14 @@ export default {
     // }
     translations: {
       ru: {
-        "app.components.HomePage.welcome.again": "Панель управления PlantDocs ёпта"
+        "app.components.HomePage.welcome.again": "Панель управления PlantDocs ёпта",
+        "app.components.LeftMenu.navbrand.title": "Внатуре это PlantDocs"
       },
     },
     tutorials: false,
+    // notifications: {
+    //   releases: false
+    // },
   },
   bootstrap() {},
 };

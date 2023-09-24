@@ -360,7 +360,7 @@ const Plant = () => {
 
                 axios({
                     method: 'put',
-                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon`,
                     headers: {
                         'Authorization': `Bearer ${getToken()}`
                     },
