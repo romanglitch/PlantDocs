@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {Link} from "react-router-dom";
 import axios from "axios";
+import qs from "qs"
 import { formatDate, countDays } from "../../publicHelpers";
 import {
     Spin, Tag,
@@ -20,6 +21,30 @@ const PlantsGrid = () => {
     const [selectedTags, setSelectedTags] = useState([0]);
 
     let getPlantsRequest = `${process.env.REACT_APP_BACKEND}/api/plants?populate[0]=categories&populate[1]=weeks.days`;
+
+    // Пример запроса: найти только архивные записи с категориями 3,4
+    // !TODO: Перевести все запросы в данный формат (используя qs!)
+    const query = qs.stringify({
+        filters: {
+            publishedAt: {
+                $null: true,
+            },
+            categories: [3,4],
+        },
+        populate: 'categories',
+        publicationState: 'preview',
+    }, {
+        encodeValuesOnly: true, // prettify URL
+    });
+
+    axios
+        .get(`${process.env.REACT_APP_BACKEND}/api/plants?${query}`)
+        .then(({ data }) => {
+            console.log(`Растения в архиве с категориями 3,4:`, data.data)
+        })
+        .catch((error) => {
+            console.log(`Error: ${error}`)
+        });
 
     useEffect(() => {
         axios

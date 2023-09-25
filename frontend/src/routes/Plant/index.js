@@ -692,7 +692,7 @@ const Plant = () => {
                                 <div className="app-plant-item__name">
                                     <Link className="app-plant-item__home-link" to="/">
                                         <LeftOutlined />
-                                        <span>{plantPage.Name}</span>
+                                        <span>{plantPage.Name} <small>{!plantPage.publishedAt ? '(В архиве)' : ''}</small></span>
                                     </Link>
                                 </div>
                                 <div className="app-plant-item__date">
