@@ -2,6 +2,8 @@
     height: auto;
     background: #fff;
     border-bottom: 1px solid #f7f7f7;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 .app-header-grid {
