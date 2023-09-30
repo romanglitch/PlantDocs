@@ -80,30 +80,31 @@ const Home = () => {
     return (
         <div className="app-home">
             <Card className="app-card card-sidebar">
-                <div className="card-sidebar__section">
-                    <div className="card-sidebar__title">
-                        Фильтр
+                <div className="card-sidebar__body">
+                    <div className="card-sidebar__section">
+                        <div className="card-sidebar__title">
+                            Фильтр
+                        </div>
+                        <div className="card-sidebar__content">
+                            <Radio.Group className="card-sidebar__list" onChange={onChangeCategory} value={filterCategory}>
+                                <Radio value={false}>Все растения</Radio>
+                                {categories.map(({ id, attributes }) => (
+                                    <Radio value={id} key={id}>{attributes.Name}</Radio>
+                                ))}
+                            </Radio.Group>
+                        </div>
                     </div>
-                    <div className="card-sidebar__content">
-                        <Radio.Group className="card-sidebar__list" onChange={onChangeCategory} value={filterCategory}>
-                            <Radio value={false}>Все растения</Radio>
-                            {categories.map(({ id, attributes }) => (
-                                <Radio value={id} key={id}>{attributes.Name}</Radio>
-                            ))}
-                        </Radio.Group>
-
-                    </div>
-                </div>
-                <div className="card-sidebar__section">
-                    <div className="card-sidebar__title">
-                        Доп. параметры
-                    </div>
-                    <div className="card-sidebar__content">
-                        <div className="card-sidebar__list">
-                            <label className="app-plants-archived">
-                                <Switch size="small" onChange={onChangeArchive} checked={filterArchive} />
-                                Показать архивные растения
-                            </label>
+                    <div className="card-sidebar__section">
+                        <div className="card-sidebar__title">
+                            Доп. параметры
+                        </div>
+                        <div className="card-sidebar__content">
+                            <div className="card-sidebar__list">
+                                <label className="app-plants-archive-switch">
+                                    <Switch size="small" onChange={onChangeArchive} checked={filterArchive} />
+                                    Показать архивные растения
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,23 +124,25 @@ const Home = () => {
                                             <div className="app-plant-item__name">
                                                 {attributes.Name}
                                             </div>
-                                            <div className="app-plant-item__days">
-                                                {countDays(attributes.weeks)}
-                                                <span>дней</span>
-                                            </div>
-                                            {attributes.photo.data ? (
-                                                <img alt="null" src={`${process.env.REACT_APP_BACKEND}${attributes.photo.data.attributes.formats.small.url}`}/>
-                                            ) : false}
-                                            {attributes.category.data ? (
-                                                <div className="app-plant-item__categories">
-                                                    <AppstoreOutlined />
-                                                    <span>{attributes.category.data.attributes.Name}</span>
+                                            <div className="app-plant-item__picture">
+                                                {attributes.photo.data ? (
+                                                    <img className="app-plant-item__image" alt="null" src={`${process.env.REACT_APP_BACKEND}${attributes.photo.data.attributes.formats.small.url}`}/>
+                                                ) : false}
+                                                <div className="app-plant-item__days">
+                                                    {countDays(attributes.weeks)}
+                                                    <span>дней</span>
                                                 </div>
-                                            ) : false}
+                                            </div>
                                             <div className="app-plant-item__date">
                                                 <ClockCircleOutlined />
                                                 <span>{formatDate(attributes.updatedAt)}</span>
                                             </div>
+                                            {attributes.category.data ? (
+                                                <div className="app-plant-item__category">
+                                                    <AppstoreOutlined />
+                                                    <span>{attributes.category.data.attributes.Name}</span>
+                                                </div>
+                                            ) : false}
                                         </Link>
                                     ))}
                                 </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown'
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../../helpers";
 import { formatDate, countDays } from "../../publicHelpers";
@@ -18,10 +18,9 @@ import {
     Popconfirm,
     Input,
     InputNumber,
-    Tag,
     Tooltip
 } from "antd";
-import { SmileOutlined, CalendarOutlined, FileTextOutlined, LeftOutlined, PlusOutlined, BlockOutlined, MinusSquareOutlined } from '@ant-design/icons';
+import { SmileOutlined, CalendarOutlined, FileTextOutlined, PlusOutlined, BlockOutlined, MinusSquareOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
@@ -45,7 +44,7 @@ const Plant = () => {
 
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`)
+            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon`)
             .then(({ data }) => setPlantPage(data.data.attributes))
             .catch((error) => {
                 // console.log(error)
@@ -652,7 +651,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon`,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -732,35 +731,21 @@ const Plant = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="app-plant-item app-plant-item_card-plant">
-                            <div className="app-plant-item__content">
-                                <div className="app-plant-item__days">{countDays(plantPage.weeks)}<span>дней</span></div>
-                                <div className="app-plant-item__name">
-                                    <Link className="app-plant-item__home-link" to="/">
-                                        <LeftOutlined />
-                                        <span>{plantPage.Name} <small>{!plantPage.publishedAt ? '(В архиве)' : ''}</small></span>
-                                    </Link>
+                        <div className="temp-block">
+                            <h1>
+                                <span>{plantPage.Name} <small>{!plantPage.publishedAt ? '(В архиве)' : ''}</small></span>
+                                ({countDays(plantPage.weeks)} дней)
+                            </h1>
+
+                            Последнее обновление: <span>{formatDate(plantPage.updatedAt)}</span>
+
+                            {plantPage.category.data ? (
+                                <div>
+                                    {plantPage.category.data.attributes.Name}
                                 </div>
-                                <div className="app-plant-item__date">
-                                    Последнее обновление:
-                                    <span>{formatDate(plantPage.updatedAt)}</span>
-                                </div>
-                                {plantPage.categories ? (
-                                    <div className="app-plant-item__categories">
-                                        <div className="app-plant-item__categories__title">Категории:</div>
-                                        {plantPage.categories.data.length ? plantPage.categories.data.map((cat_data) => (
-                                            <Tag bordered={false} key={cat_data.id}>
-                                                {cat_data.attributes.Name}
-                                            </Tag>
-                                        )) : (
-                                            <Tag bordered={false}>
-                                                Без категории
-                                            </Tag>
-                                        )}
-                                    </div>
-                                ) : false}
-                            </div>
+                            ) : false}
                         </div>
+
                         <Tabs
                             className="card-plant-tabs"
                             defaultActiveKey="1"

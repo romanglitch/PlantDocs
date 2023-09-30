@@ -402,3 +402,10 @@
     align-items: center;
     gap: 7px;
 }
+
+.temp-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 25px;
+}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "antd";
+import { Button, Popover } from "antd";
 import {
     LogoutOutlined,
     DashboardOutlined
@@ -45,18 +45,27 @@ const AppHeader = () => {
             </div>
             <div className="app-header-grid__col">
                 {auth ? (
-                    <div className="app-header-auth">
-                        <Button className="app-header-auth__button" type={'link'} href={`${process.env.REACT_APP_BACKEND}/admin`} target={'_blank'}>
-                            <DashboardOutlined /> Панель управления
-                        </Button>
-                        <Button
-                            className="app-header-auth__button"
-                            type="primary"
-                            onClick={handleLogout}
-                        >
-                            <LogoutOutlined /> {user.username}
-                        </Button>
-                    </div>
+                    <Popover content={(
+                        <div className="app-header-user-content">
+                            <Button className="app-header-auth__button" type={'link'} href={`${process.env.REACT_APP_BACKEND}/admin`} target={'_blank'}>
+                                <DashboardOutlined /> Панель управления
+                            </Button>
+                            <Button
+                                className="app-header-auth__button"
+                                type="primary"
+                                onClick={handleLogout}
+                            >
+                                <LogoutOutlined /> Выйти
+                            </Button>
+                        </div>
+                    )} trigger="click">
+                        <div className="app-header-user">
+                            <div className="app-header-user__name">
+                                {user.username}
+                            </div>
+                            <img className="app-header-user__avatar" alt="null" src={`https://robohash.org/${user.id}.png?size=42x42`}/>
+                        </div>
+                    </Popover>
                 ) : false}
             </div>
         </div>
