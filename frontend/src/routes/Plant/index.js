@@ -21,7 +21,7 @@ import {
     Tag,
     Tooltip
 } from "antd";
-import { SmileOutlined, CalendarOutlined, FileTextOutlined, LeftOutlined, PlusOutlined, BlockOutlined } from '@ant-design/icons';
+import { SmileOutlined, CalendarOutlined, FileTextOutlined, LeftOutlined, PlusOutlined, BlockOutlined, MinusSquareOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
@@ -261,7 +261,7 @@ const Plant = () => {
                 okText="Да"
                 cancelText="Нет"
             >
-                <Button type="primary" danger loading={IsDeleteLoading}>
+                <Button type="primary" danger icon={<MinusSquareOutlined />} loading={IsDeleteLoading}>
                     Удалить неделю
                 </Button>
             </Popconfirm>
