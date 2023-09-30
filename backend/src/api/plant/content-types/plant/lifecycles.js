@@ -3,7 +3,7 @@ module.exports = {
     const { result, params } = event;
 
     const getDate = (addDays) => {
-      let today = new Date(result.updatedAt);
+      let today = new Date();
       let getDate = addDays ? today.getDate() + addDays : today.getDate();
       let dd = String(getDate).padStart(2, '0');
       let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -14,7 +14,7 @@ module.exports = {
       return today
     }
 
-    // Add first week and first 7 days
+    // Add 1 week and 7 days
     strapi.entityService.update('api::plant.plant', result.id, {
       data: {
         weeks: [
@@ -43,8 +43,8 @@ module.exports = {
               }
             ]
           }
-        ]
+        ],
       },
     });
-  }
+  },
 }

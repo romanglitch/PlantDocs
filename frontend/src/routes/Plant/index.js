@@ -222,6 +222,52 @@ const Plant = () => {
         )
     }
 
+    const DeleteWeekButton = () => {
+        const [IsDeleteLoading, setIsDeleteLoading] = useState(false);
+
+        let onClickEvent = (e) => {
+            e.preventDefault()
+
+            setIsDeleteLoading(true)
+
+            const {weeks} = plantPage
+            weeks.pop()
+
+            axios({
+                method: 'put',
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
+                    data: {
+                        weeks: weeks
+                    }
+                }
+            }).then(function (response) {
+                setIsDeleteLoading(false)
+                setPlantPage(response.data.data.attributes)
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+        return (
+            <Popconfirm
+                title="Удалить неделю"
+                description="Вы действительно хотите удалить неделю ?"
+                onConfirm={onClickEvent}
+                onCancel={e => e.preventDefault()}
+                okText="Да"
+                cancelText="Нет"
+            >
+                <Button type="primary" danger loading={IsDeleteLoading}>
+                    Удалить неделю
+                </Button>
+            </Popconfirm>
+        )
+    }
+
     const SelectTags = (data) => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const dayObject = weekObject.days.find(item => item.id === data.dayId);
@@ -802,7 +848,10 @@ const Plant = () => {
                                                                     <AddOneDayButton weekIndex={index} />
                                                                     <AddSevenDaysButton weekIndex={index} />
                                                                     {plantPage.weeks.length <= 14 ? (
-                                                                        <AddWeekButton />
+                                                                        <>
+                                                                            <DeleteWeekButton />
+                                                                            <AddWeekButton />
+                                                                        </>
                                                                     ) : false }
                                                                 </div>
                                                             ) : false }
