@@ -16,7 +16,8 @@ export const countDays = (weeksArray) => {
 
     if (weeksArray) {
         weeksArray.forEach(function (data) {
-            daysCount = daysCount + data.days.length
+            let getPassedDays = data.days.filter((day) => day.passed === true)
+            daysCount = daysCount + getPassedDays.length
         })
     }
 

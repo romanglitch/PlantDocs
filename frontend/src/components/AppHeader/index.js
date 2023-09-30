@@ -54,7 +54,7 @@ const AppHeader = () => {
                             type="primary"
                             onClick={handleLogout}
                         >
-                            <LogoutOutlined /> Выйти
+                            <LogoutOutlined /> {user.username}
                         </Button>
                     </div>
                 ) : false}

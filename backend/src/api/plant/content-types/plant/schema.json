@@ -17,20 +17,24 @@
       "required": true,
       "unique": false
     },
-    "Content": {
-      "type": "richtext"
-    },
-    "categories": {
+    "category": {
       "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::category.category",
-      "mappedBy": "plants"
+      "relation": "oneToOne",
+      "target": "api::category.category"
     },
     "weeks": {
       "displayName": "weeks",
       "type": "component",
       "repeatable": true,
       "component": "main.weeks"
+    },
+    "photo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": false
     }
   }
 }
