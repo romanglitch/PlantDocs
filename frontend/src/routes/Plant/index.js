@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown'
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../../helpers";
-import { formatDate, countDays } from "../../publicHelpers";
-import remarkBreaks from "remark-breaks";
-import remarkGfm from "remark-gfm";
+import { formatDate } from "../../publicHelpers";
 
 import {
     Spin,
@@ -20,7 +17,13 @@ import {
     InputNumber,
     Tooltip
 } from "antd";
-import { SmileOutlined, CalendarOutlined, FileTextOutlined, PlusOutlined, BlockOutlined, MinusSquareOutlined } from '@ant-design/icons';
+import {
+    SmileOutlined,
+    CalendarOutlined,
+    PlusOutlined,
+    BlockOutlined,
+    MinusSquareOutlined
+} from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
@@ -44,11 +47,12 @@ const Plant = () => {
 
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon`)
+            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon&populate[2]=photo`)
             .then(({ data }) => setPlantPage(data.data.attributes))
             .catch((error) => {
                 // console.log(error)
                 navigate('/')
+                return false
             });
 
         axios
@@ -188,7 +192,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -234,7 +238,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -285,7 +289,7 @@ const Plant = () => {
                 setTimeout(function () {
                     axios({
                         method: 'put',
-                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
                         headers: {
                             'Authorization': `Bearer ${getToken()}`
                         },
@@ -348,22 +352,24 @@ const Plant = () => {
     const PassDayButton = (data) => {
         const [IsPassLoading, setIsPassLoading] = useState(false);
 
+        const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
+        const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
+        const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
+
+        const {weeks} = plantPage
+
+        let isPassed = weeks[weekIndex].days[dayIndex].passed;
+
         let onClickEvent = (e) => {
             e.preventDefault()
 
             setIsPassLoading(true)
 
-            const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
-            const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
-            const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
-
-            const {weeks} = plantPage
-
-            weeks[weekIndex].days[dayIndex].passed = true
+            isPassed ? weeks[weekIndex].days[dayIndex].passed = false : weeks[weekIndex].days[dayIndex].passed = true
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -383,7 +389,7 @@ const Plant = () => {
 
         return (
             <Button type="primary" onClick={onClickEvent} loading={IsPassLoading}>
-                Закрыть день
+                {isPassed ? 'Открыть день' : 'Закрыть день'}
             </Button>
         )
     };
@@ -405,7 +411,7 @@ const Plant = () => {
 
                 axios({
                     method: 'put',
-                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon`,
+                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon&populate[2]=photo`,
                     headers: {
                         'Authorization': `Bearer ${getToken()}`
                     },
@@ -448,7 +454,7 @@ const Plant = () => {
                 setTimeout(function () {
                     axios({
                         method: 'put',
-                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
                         headers: {
                             'Authorization': `Bearer ${getToken()}`
                         },
@@ -531,7 +537,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -582,7 +588,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -651,7 +657,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon`,
+                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -731,21 +737,6 @@ const Plant = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="temp-block">
-                            <h1>
-                                <span>{plantPage.Name} <small>{!plantPage.publishedAt ? '(В архиве)' : ''}</small></span>
-                                ({countDays(plantPage.weeks)} дней)
-                            </h1>
-
-                            Последнее обновление: <span>{formatDate(plantPage.updatedAt)}</span>
-
-                            {plantPage.category.data ? (
-                                <div>
-                                    {plantPage.category.data.attributes.Name}
-                                </div>
-                            ) : false}
-                        </div>
-
                         <Tabs
                             className="card-plant-tabs"
                             defaultActiveKey="1"
@@ -755,7 +746,7 @@ const Plant = () => {
                                     label: (
                                         <div className="card-plant-tabs__label">
                                             <SmileOutlined />
-                                            Растение
+                                            Дни растения
                                         </div>
                                     ),
                                     children: (
@@ -786,9 +777,7 @@ const Plant = () => {
                                                                                         {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
                                                                                             <DeleteDayButton weekId={data.id} dayId={days_data.id} />
                                                                                         ) : false }
-                                                                                        {days_data.passed ? false : (
-                                                                                            <PassDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                        )}
+                                                                                        <PassDayButton weekId={data.id} dayId={days_data.id} />
                                                                                     </div>
                                                                                 </div>
                                                                             )}
@@ -864,43 +853,7 @@ const Plant = () => {
                                             />
                                         </div>
                                     ),
-                                },
-                                plantPage.Content ? {
-                                    key: '3',
-                                    label: (
-                                        <div className="card-plant-tabs__label">
-                                            <FileTextOutlined />
-                                            Описание
-                                        </div>
-                                    ),
-                                    children: (
-                                        <div className="card-plant-tabs__content">
-                                            {plantPage.Content ? (
-                                                <>
-                                                    <div className="card-plant-tabs__plant-content">
-                                                        <ReactMarkdown
-                                                            transformImageUri={
-                                                                function (src) {
-                                                                    src = `${process.env.REACT_APP_BACKEND}${src}`
-                                                                    return src
-                                                                }
-                                                            }
-                                                            transformLinkUri={
-                                                                function (href) {
-                                                                    href = `${process.env.REACT_APP_BACKEND}${href}`
-                                                                    return href
-                                                                }
-                                                            }
-                                                            remarkPlugins={[remarkGfm, remarkBreaks]}
-                                                        >
-                                                            {plantPage.Content}
-                                                        </ReactMarkdown>
-                                                    </div>
-                                                </>
-                                            ) : false }
-                                        </div>
-                                    ),
-                                } : false
+                                }
                             ]}
                             onTabClick={function () {
                                 window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

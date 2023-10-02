@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import {Link} from "react-router-dom";
 import axios from "axios";
 import qs from "qs"
-import { formatDate, countDays } from "../../publicHelpers";
+import { formatDate, countDays, getPostfix } from "../../publicHelpers";
 
 import {
     Spin, Switch, Card, Radio
@@ -126,11 +126,11 @@ const Home = () => {
                                             </div>
                                             <div className="app-plant-item__picture">
                                                 {attributes.photo.data ? (
-                                                    <img className="app-plant-item__image" alt="null" src={`${process.env.REACT_APP_BACKEND}${attributes.photo.data.attributes.formats.small.url}`}/>
+                                                    <img className="app-plant-item__image" alt="null" loading="lazy" src={`${process.env.REACT_APP_BACKEND}${attributes.photo.data.attributes.formats.small.url}`}/>
                                                 ) : false}
                                                 <div className="app-plant-item__days">
                                                     {countDays(attributes.weeks)}
-                                                    <span>дней</span>
+                                                    <span>{getPostfix(countDays(attributes.weeks), 'день', 'дня', 'дней')}</span>
                                                 </div>
                                             </div>
                                             <div className="app-plant-item__date">
