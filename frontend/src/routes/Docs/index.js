@@ -47,7 +47,7 @@ const Docs = () => {
                         <Spin size="large" />
                     </div>
                 ) : (
-                    <div>
+                    <div className="app-docs-content">
                         <ReactMarkdown
                             transformImageUri={
                                 function (src) {
@@ -62,6 +62,7 @@ const Docs = () => {
                                 }
                             }
                             remarkPlugins={[remarkGfm, remarkBreaks]}
+                            // Обработчики элементов
                             // components={{
                             //     a (props) {
                             //         const {node, href, ...rest} = props
