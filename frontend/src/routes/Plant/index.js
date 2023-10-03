@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import qs from "qs"
 import { getToken } from "../../helpers";
 import { formatDate } from "../../publicHelpers";
 
@@ -68,9 +69,21 @@ const Plant = () => {
         });
     };
 
+    const plantPageQuery = qs.stringify({
+        populate: {
+            0: 'category',
+            1: 'weeks.days.tags.icon',
+            2: 'photo'
+        }
+    }, {
+        encodeValuesOnly: true, // prettify URL
+    });
+
+    const defaultPageURL = `${process.env.REACT_APP_BACKEND}/api/plants/${id}?${plantPageQuery}`
+
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon&populate[2]=photo`)
+            .get(defaultPageURL)
             .then(({ data }) => {
                 setPlantPage(data.data.attributes)
             })
@@ -87,17 +100,13 @@ const Plant = () => {
             })
             .catch((error) => console.log(error))
             .finally(() => setIsLoading(false));
-    }, [id, navigate]);
+    }, [defaultPageURL, navigate]);
 
     const SavePlantButton = () => {
         const [isSaveLoading, setIsSaveLoading] = useState(false);
 
-        let onClickEvent = () => {
-            setIsSaveLoading(true)
-
-            const {weeks} = plantPage
-
-            weeks.forEach((weekItem) => {
+        const tagsToIDs = (weeksArray) => {
+            weeksArray.forEach((weekItem) => {
                 weekItem.days.forEach((dayItem) => {
                     let tagsArray = dayItem.tags.data;
 
@@ -108,10 +117,18 @@ const Plant = () => {
                     dayItem.tags = netTagsArray
                 })
             })
+        }
+
+        let onClickEvent = () => {
+            setIsSaveLoading(true)
+
+            const {weeks} = plantPage
+
+            tagsToIDs(weeks)
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon&populate[1]=category&populate[2]=photo`,
+                url: defaultPageURL,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -438,7 +455,13 @@ const Plant = () => {
         }
 
         let onBlurEvent = (e) => {
-            if (weeks[weekIndex].days[dayIndex].humidity !== e.target.value) {
+            let dayHumidity = weeks[weekIndex].days[dayIndex].humidity
+
+            if (dayHumidity !== e.target.value) {
+                if (e.target.value > 100 || e.target.value < 0) {
+                    e.target.value = 0
+                }
+
                 weeks[weekIndex].days[dayIndex].humidity = e.target.value
 
                 setPlantPage(plantPage => ({
@@ -546,7 +569,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
+                url: defaultPageURL,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -559,7 +582,7 @@ const Plant = () => {
                 setPlantPage(response.data.data.attributes)
                 setIsAddWeekLoading(false)
                 api.open({
-                    message: 'Изменения сохраннены',
+                    message: 'Изменения сохраннены (+1 неделя)',
                     className: 'app-changes-notify',
                     duration: 3,
                     closeIcon: false,
@@ -605,7 +628,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
+                url: defaultPageURL,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -618,7 +641,7 @@ const Plant = () => {
                 setPlantPage(response.data.data.attributes)
                 setIsAddOneDayLoading(false)
                 api.open({
-                    message: 'Изменения сохраннены',
+                    message: 'Изменения сохраннены (+1 день)',
                     className: 'app-changes-notify',
                     duration: 3,
                     closeIcon: false,
@@ -682,7 +705,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
+                url: defaultPageURL,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -695,7 +718,7 @@ const Plant = () => {
                 setPlantPage(response.data.data.attributes)
                 setIsAddSevenDayLoading(false)
                 api.open({
-                    message: 'Изменения сохраннены',
+                    message: 'Изменения сохраннены (+7 дней)',
                     className: 'app-changes-notify',
                     duration: 3,
                     closeIcon: false,
@@ -770,6 +793,9 @@ const Plant = () => {
                     </div>
                 ) : (
                     <>
+                        <div className="app-plant-header">
+                            plant-header
+                        </div>
                         <Tabs
                             className="card-plant-tabs"
                             defaultActiveKey="1"
