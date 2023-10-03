@@ -70,8 +70,7 @@ const Plant = () => {
             })
             .catch((error) => {
                 // console.log(error)
-                navigate('/')
-                return false
+                navigate('/error')
             });
 
         axios
@@ -379,7 +378,7 @@ const Plant = () => {
         let onMouseLeaveEvent = () => {
             mouseLeaveTimeOut = setTimeout(function () {
                 setData()
-            }, 1000);
+            }, 1500);
         }
 
         const selectOptions = [];
@@ -415,7 +414,6 @@ const Plant = () => {
                     defaultValue={defaultOptions}
                     options={selectOptions}
                     onChange={onChangeEvent}
-                    onBlur={setData}
                     onMouseLeave={onMouseLeaveEvent}
                 />
             </>
@@ -833,12 +831,21 @@ const Plant = () => {
         return indexTitle
     }
 
+    const currentDate = () => {
+        const date = new Date();
+
+        let day = date.getDate();
+        let month = date.getMonth() + 1;
+        let year = date.getFullYear();
+
+        return `${day}-${month}-${year}`
+    }
+
     return (
         <>
             <Helmet>
                 <title>{`${plantPage.Name ? plantPage.Name : 'Loading...'} - PlantDocs`}</title>
             </Helmet>
-
             {contextHolder}
             <Card className="app-card card-plant">
                 {isLoading ? (
@@ -980,7 +987,7 @@ const Plant = () => {
                                     label: (
                                         <div className="card-plant-tabs__label">
                                             <CalendarOutlined />
-                                            Календарь
+                                            Календарь ({formatDate(currentDate())})
                                         </div>
                                     ),
                                     children: (
