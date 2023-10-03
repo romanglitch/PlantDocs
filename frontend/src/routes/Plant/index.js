@@ -4,6 +4,7 @@ import axios from "axios";
 import qs from "qs"
 import { getToken } from "../../helpers";
 import {countDays, formatDate, getPostfix} from "../../publicHelpers";
+import { Helmet } from 'react-helmet-async';
 
 import {
     Spin,
@@ -834,6 +835,10 @@ const Plant = () => {
 
     return (
         <>
+            <Helmet>
+                <title>{`${plantPage.Name ? plantPage.Name : 'Loading...'} - PlantDocs`}</title>
+            </Helmet>
+
             {contextHolder}
             <Card className="app-card card-plant">
                 {isLoading ? (
