@@ -42,9 +42,7 @@ const Home = () => {
             query.filters.category = filterCategory
         }
 
-        const queryParams = qs.stringify(query, {
-            encodeValuesOnly: true, // prettify URL
-        });
+        const queryParams = qs.stringify(query);
 
         setIsLoading(true)
 

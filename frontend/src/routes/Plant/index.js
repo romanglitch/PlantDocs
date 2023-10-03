@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import qs from "qs"
 import { getToken } from "../../helpers";
-import { formatDate } from "../../publicHelpers";
+import {countDays, formatDate, getPostfix} from "../../publicHelpers";
 
 import {
     Spin,
@@ -25,7 +25,7 @@ import {
     CalendarOutlined,
     PlusOutlined,
     BlockOutlined,
-    MinusSquareOutlined
+    MinusSquareOutlined, ClockCircleOutlined, AppstoreOutlined
 } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
@@ -39,35 +39,17 @@ dayjs.locale('ru-ru');
 const { TextArea } = Input;
 
 const Plant = () => {
-    const navigate = useNavigate();
-    const {id} = useParams();
+    const navigate = useNavigate()
+    const {id} = useParams()
 
     const [calFilter, setCalFilter] = useState([])
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [plantPage, setPlantPage] = useState([]);
+    const [isLoading, setIsLoading] = useState(true)
+    const [plantPage, setPlantPage] = useState([])
 
-    const [tags, setTags] = useState([]);
+    const [tags, setTags] = useState([])
 
-    const [api, contextHolder] = notification.useNotification();
-
-    const openChangesNotification = () => {
-        const btn = (
-            <Space>
-                <SavePlantButton/>
-            </Space>
-        );
-
-        api.open({
-            message: 'Есть несохраненные изменения!',
-            duration: null,
-            // placement: 'bottom',
-            closeIcon: false,
-            className: 'app-changes-notify',
-            btn,
-            key: 'changes',
-        });
-    };
+    const [api, contextHolder] = notification.useNotification()
 
     const plantPageQuery = qs.stringify({
         populate: {
@@ -75,9 +57,7 @@ const Plant = () => {
             1: 'weeks.days.tags.icon',
             2: 'photo'
         }
-    }, {
-        encodeValuesOnly: true, // prettify URL
-    });
+    })
 
     const defaultPageURL = `${process.env.REACT_APP_BACKEND}/api/plants/${id}?${plantPageQuery}`
 
@@ -100,7 +80,25 @@ const Plant = () => {
             })
             .catch((error) => console.log(error))
             .finally(() => setIsLoading(false));
-    }, [defaultPageURL, navigate]);
+    }, [defaultPageURL, navigate])
+
+    const openChangesNotification = () => {
+        const btn = (
+            <Space>
+                <SavePlantButton/>
+            </Space>
+        );
+
+        api.open({
+            message: 'Есть несохраненные изменения!',
+            duration: null,
+            // placement: 'bottom',
+            closeIcon: false,
+            className: 'app-changes-notify',
+            btn,
+            key: 'changes',
+        });
+    }
 
     const SavePlantButton = () => {
         const [isSaveLoading, setIsSaveLoading] = useState(false);
@@ -137,6 +135,8 @@ const Plant = () => {
                         weeks: weeks
                     }
                 }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
             }).catch(function (error) {
                 console.log(error);
             }).finally(function () {
@@ -145,7 +145,7 @@ const Plant = () => {
                 api.destroy('changes')
 
                 api.open({
-                    message: 'Изменения сохраннены',
+                    message: 'Изменения сохранены',
                     className: 'app-changes-notify',
                     duration: 3,
                     closeIcon: false,
@@ -159,7 +159,7 @@ const Plant = () => {
                 {isSaveLoading ? 'Сохранение...' : 'Сохранить'}
             </Button>
         )
-    };
+    }
 
     const CalendarFilter = () => {
         const selectOptions = [];
@@ -265,7 +265,6 @@ const Plant = () => {
         return false;
     }
 
-    // Изменить механику обновления (OK)
     const DeleteDayButton = (data) => {
         let onClickEvent = (e) => {
             e.preventDefault()
@@ -308,7 +307,6 @@ const Plant = () => {
         )
     }
 
-    // Изменить механику обновления (OK)
     const DeleteWeekButton = () => {
         let onClickEvent = (e) => {
             e.preventDefault()
@@ -340,7 +338,6 @@ const Plant = () => {
         )
     }
 
-    // Изменить механику обновления (OK)
     const SelectTags = (data) => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const dayObject = weekObject.days.find(item => item.id === data.dayId);
@@ -349,7 +346,24 @@ const Plant = () => {
 
         let isChanged = false
 
+        let mouseLeaveTimeOut = null
+
+        let setData = () => {
+            clearTimeout(mouseLeaveTimeOut);
+
+            if (isChanged) {
+                setPlantPage(plantPage => ({
+                    ...plantPage,
+                    ...weeks
+                }));
+
+                isChanged = false
+            }
+        }
+
         let onChangeEvent = (values) => {
+            clearTimeout(mouseLeaveTimeOut);
+
             let newSelectedTags = []
 
             values.forEach((value) => newSelectedTags.push(tags.find(tag => tag.id === value)))
@@ -361,15 +375,10 @@ const Plant = () => {
             openChangesNotification()
         }
 
-        let onBlurEvent = () => {
-            if (isChanged) {
-                setPlantPage(plantPage => ({
-                    ...plantPage,
-                    ...weeks
-                }));
-
-                isChanged = false
-            }
+        let onMouseLeaveEvent = () => {
+            mouseLeaveTimeOut = setTimeout(function () {
+                setData()
+            }, 1000);
         }
 
         const selectOptions = [];
@@ -405,14 +414,13 @@ const Plant = () => {
                     defaultValue={defaultOptions}
                     options={selectOptions}
                     onChange={onChangeEvent}
-                    onBlur={onBlurEvent}
-                    // onMouseLeave={onMouseLeave}
+                    onBlur={setData}
+                    onMouseLeave={onMouseLeaveEvent}
                 />
             </>
         )
     }
 
-    // Изменить механику обновления (OK)
     const PassDayButton = (data) => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
@@ -440,9 +448,8 @@ const Plant = () => {
                 {isPassed ? 'Открыть день' : 'Закрыть день'}
             </Button>
         )
-    };
+    }
 
-    // Изменить механику обновления (OK)
     const EditHumidity = (data) => {
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
@@ -482,9 +489,8 @@ const Plant = () => {
                 )} min={0} max={100} defaultValue={weeks[weekIndex].days[dayIndex].humidity ? weeks[weekIndex].days[dayIndex].humidity : 0} />
             </>
         )
-    };
+    }
 
-    // Изменить механику обновления (OK)
     const WeekDescription = (data) => {
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
 
@@ -516,9 +522,8 @@ const Plant = () => {
                 }}
             />
         )
-    };
+    }
 
-    // Изменить механику обновления (Не требуется)
     const AddWeekButton = () => {
         const [IsAddWeekLoading, setIsAddWeekLoading] = useState(false);
 
@@ -527,6 +532,7 @@ const Plant = () => {
         const onClickEvent = (e) => {
             e.preventDefault()
             setIsAddWeekLoading(true)
+            api.destroy('changes')
 
             let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
                 lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
@@ -582,7 +588,7 @@ const Plant = () => {
                 setPlantPage(response.data.data.attributes)
                 setIsAddWeekLoading(false)
                 api.open({
-                    message: 'Изменения сохраннены (+1 неделя)',
+                    message: 'Изменения сохранены (+1 неделя)',
                     className: 'app-changes-notify',
                     duration: 3,
                     closeIcon: false,
@@ -598,9 +604,8 @@ const Plant = () => {
                 Добавить новую неделю
             </Button>
         )
-    };
+    }
 
-    // Изменить механику обновления (Не требуется)
     const AddOneDayButton = (data) => {
         const [IsAddOneDayLoading, setIsAddOneDayLoading] = useState(false);
 
@@ -608,6 +613,7 @@ const Plant = () => {
 
         const onClickEvent = (e) => {
             setIsAddOneDayLoading(true)
+            api.destroy('changes')
 
             let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
                 lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
@@ -641,7 +647,7 @@ const Plant = () => {
                 setPlantPage(response.data.data.attributes)
                 setIsAddOneDayLoading(false)
                 api.open({
-                    message: 'Изменения сохраннены (+1 день)',
+                    message: 'Изменения сохранены (+1 день)',
                     className: 'app-changes-notify',
                     duration: 3,
                     closeIcon: false,
@@ -657,15 +663,15 @@ const Plant = () => {
                 1 день
             </Button>
         )
-    };
+    }
 
-    // Изменить механику обновления (Не требуется)
     const AddSevenDaysButton = (data) => {
         const [IsAddSevenDayLoading, setIsAddSevenDayLoading] = useState(false);
         const {weeks} = plantPage
 
         const onClickEvent = (e) => {
             setIsAddSevenDayLoading(true)
+            api.destroy('changes')
 
             let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
                 lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
@@ -718,7 +724,7 @@ const Plant = () => {
                 setPlantPage(response.data.data.attributes)
                 setIsAddSevenDayLoading(false)
                 api.open({
-                    message: 'Изменения сохраннены (+7 дней)',
+                    message: 'Изменения сохранены (+7 дней)',
                     className: 'app-changes-notify',
                     duration: 3,
                     closeIcon: false,
@@ -734,7 +740,50 @@ const Plant = () => {
                 7 дней
             </Button>
         )
-    };
+    }
+
+    const ArchiveButton = () => {
+        const [archiveLoading, setArchiveLoading] = useState(false);
+
+        let onClickEvent = (e) => {
+            e.preventDefault()
+
+            api.destroy('changes')
+
+            setArchiveLoading(true)
+
+            axios({
+                method: 'put',
+                url: defaultPageURL,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
+                    data: {
+                        publishedAt: plantPage.publishedAt ? null : Date.now()
+                    }
+                }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
+                setArchiveLoading(false)
+                api.open({
+                    message: plantPage.publishedAt ? 'Растение перенесено в архив' : 'Растение удалено из архива',
+                    className: 'app-changes-notify',
+                    duration: 3,
+                    closeIcon: false,
+                    key: 'archive'
+                });
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+        return (
+            <Button type="primary" onClick={onClickEvent} loading={archiveLoading}>
+                <span>{plantPage.publishedAt ? 'В архив' : 'Удалить из архива'}</span>
+            </Button>
+        )
+    }
 
     const DayIndex = (data) => {
         const {weeks} = plantPage
@@ -754,7 +803,7 @@ const Plant = () => {
                 {dayIndex + 1} День
             </div>
         )
-    };
+    }
 
     const WeekIndex = (props) => {
         let index = props.weekIndex + 1
@@ -794,7 +843,33 @@ const Plant = () => {
                 ) : (
                     <>
                         <div className="app-plant-header">
-                            plant-header
+                            {plantPage.photo ? (
+                                <img className="app-plant-header__bg" src={plantPage.photo.data ? `${process.env.REACT_APP_BACKEND}${plantPage.photo.data.attributes.formats.small.url}` : ''} alt="null"/>
+                            ) : false}
+                            <div className="app-plant-header__content">
+                                <div className="app-plant-header__days">
+                                    {countDays(plantPage.weeks)}
+                                    <span>{getPostfix(countDays(plantPage.weeks), 'день', 'дня', 'дней')}</span>
+                                </div>
+                                <div className="app-plant-header__info">
+                                    <div className="app-plant-header__title">
+                                        {plantPage.Name}
+                                    </div>
+                                    <div className="app-plant-header__date">
+                                        <ClockCircleOutlined />
+                                        <span>{plantPage.updatedAt ? formatDate(plantPage.updatedAt) : false}</span>
+                                    </div>
+                                    {plantPage.category.data ? (
+                                        <div className="app-plant-header__category">
+                                            <AppstoreOutlined />
+                                            <span>{plantPage.category.data.attributes.Name}</span>
+                                        </div>
+                                    ) : false}
+                                </div>
+                                <div className="app-plant-header__actions">
+                                    <ArchiveButton/>
+                                </div>
+                            </div>
                         </div>
                         <Tabs
                             className="card-plant-tabs"
