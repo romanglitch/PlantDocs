@@ -15,7 +15,9 @@ import {
     Popconfirm,
     Input,
     InputNumber,
-    Tooltip
+    Tooltip,
+    notification,
+    Space
 } from "antd";
 import {
     SmileOutlined,
@@ -37,18 +39,72 @@ const { TextArea } = Input;
 
 const Plant = () => {
     const navigate = useNavigate();
+    const {id} = useParams();
 
     const [calFilter, setCalFilter] = useState([])
+
     const [isLoading, setIsLoading] = useState(true);
     const [plantPage, setPlantPage] = useState([]);
+
     const [tags, setTags] = useState([]);
 
-    const {id} = useParams();
+    const [api, contextHolder] = notification.useNotification();
+
+    const openChangesNotification = () => {
+        const key = `Changes Notification`;
+
+        const btn = (
+            <Space>
+                <Button type="primary" size="small" onClick={() => {
+                    const {weeks} = plantPage
+
+                    axios({
+                        method: 'put',
+                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon&populate[1]=category&populate[2]=photo`,
+                        headers: {
+                            'Authorization': `Bearer ${getToken()}`
+                        },
+                        data: {
+                            data: {
+                                weeks: weeks
+                            }
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    }).finally(function () {
+                        api.destroy(key)
+
+                        api.open({
+                            message: 'Изменения сохраннены',
+                            className: 'app-changes-notify',
+                            duration: 3,
+                            closeIcon: false,
+                            key: 'saved'
+                        });
+                    });
+                }}>
+                    Сохранить
+                </Button>
+            </Space>
+        );
+
+        api.open({
+            message: 'Есть несохраненные изменения!',
+            duration: null,
+            // placement: 'bottom',
+            closeIcon: false,
+            className: 'app-changes-notify',
+            btn,
+            key,
+        });
+    };
 
     useEffect(() => {
         axios
             .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=category&populate[1]=weeks.days.tags.icon&populate[2]=photo`)
-            .then(({ data }) => setPlantPage(data.data.attributes))
+            .then(({ data }) => {
+                setPlantPage(data.data.attributes)
+            })
             .catch((error) => {
                 // console.log(error)
                 navigate('/')
@@ -350,8 +406,6 @@ const Plant = () => {
     }
 
     const PassDayButton = (data) => {
-        const [IsPassLoading, setIsPassLoading] = useState(false);
-
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
         const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
@@ -363,32 +417,18 @@ const Plant = () => {
         let onClickEvent = (e) => {
             e.preventDefault()
 
-            setIsPassLoading(true)
-
             isPassed ? weeks[weekIndex].days[dayIndex].passed = false : weeks[weekIndex].days[dayIndex].passed = true
 
-            axios({
-                method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon&populate[2]=photo`,
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`
-                },
-                data: {
-                    data: {
-                        weeks: weeks
-                    }
-                }
-            }).then(function (response) {
-                setPlantPage(response.data.data.attributes)
-            }).catch(function (error) {
-                console.log(error);
-            }).finally(function () {
-                setIsPassLoading(false)
-            });
+            setPlantPage(plantPage => ({
+                ...plantPage,
+                ...weeks
+            }));
+
+            openChangesNotification()
         }
 
         return (
-            <Button type="primary" onClick={onClickEvent} loading={IsPassLoading}>
+            <Button type="primary" onClick={onClickEvent}>
                 {isPassed ? 'Открыть день' : 'Закрыть день'}
             </Button>
         )
@@ -730,6 +770,7 @@ const Plant = () => {
 
     return (
         <>
+            {contextHolder}
             <Card className="app-card card-plant">
                 {isLoading ? (
                     <div className="app-plant-loader">

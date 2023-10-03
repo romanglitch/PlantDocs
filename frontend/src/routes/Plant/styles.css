@@ -402,3 +402,29 @@
     align-items: center;
     gap: 7px;
 }
+
+.ant-notification-notice.app-changes-notify .ant-notification-notice-description {
+    display: none;
+}
+
+.ant-notification-notice.app-changes-notify .ant-notification-notice-content > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.ant-notification-notice.app-changes-notify .ant-notification-notice-btn {
+    margin-top: 0;
+    float: none;
+}
+
+.ant-notification-notice.app-changes-notify .ant-notification-notice-message {
+    margin-bottom: 0;
+    font-size: 15px;
+}
+
+.ant-notification-notice.app-changes-notify {
+    padding: 12px;
+    width: max-content;
+}
