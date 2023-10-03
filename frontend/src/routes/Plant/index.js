@@ -69,8 +69,7 @@ const Plant = () => {
                 setPlantPage(data.data.attributes)
             })
             .catch((error) => {
-                // console.log(error)
-                navigate('/error')
+                navigate('/404')
             });
 
         axios
@@ -854,35 +853,40 @@ const Plant = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="app-plant-header">
-                            {plantPage.photo ? (
-                                <img className="app-plant-header__bg" src={plantPage.photo.data ? `${process.env.REACT_APP_BACKEND}${plantPage.photo.data.attributes.formats.small.url}` : ''} alt="null"/>
-                            ) : false}
-                            <div className="app-plant-header__content">
-                                <div className="app-plant-header__days">
-                                    {countDays(plantPage.weeks)}
-                                    <span>{getPostfix(countDays(plantPage.weeks), 'день', 'дня', 'дней')}</span>
-                                </div>
-                                <div className="app-plant-header__info">
-                                    <div className="app-plant-header__title">
-                                        {plantPage.Name}
+                        {/*
+                            plantPage.updatedAt ? - Баг, иначе ругается на дату (при ошибке 404)
+                         */}
+                        {plantPage.updatedAt ? (
+                            <div className="app-plant-header">
+                                {plantPage.photo ? (
+                                    <img className="app-plant-header__bg" src={plantPage.photo.data ? `${process.env.REACT_APP_BACKEND}${plantPage.photo.data.attributes.formats.small.url}` : ''} alt="null"/>
+                                ) : false}
+                                <div className="app-plant-header__content">
+                                    <div className="app-plant-header__days">
+                                        {countDays(plantPage.weeks)}
+                                        <span>{getPostfix(countDays(plantPage.weeks), 'день', 'дня', 'дней')}</span>
                                     </div>
-                                    <div className="app-plant-header__date">
-                                        <ClockCircleOutlined />
-                                        <span>{plantPage.updatedAt ? formatDate(plantPage.updatedAt) : false}</span>
-                                    </div>
-                                    {plantPage.category.data ? (
-                                        <div className="app-plant-header__category">
-                                            <AppstoreOutlined />
-                                            <span>{plantPage.category.data.attributes.Name}</span>
+                                    <div className="app-plant-header__info">
+                                        <div className="app-plant-header__title">
+                                            {plantPage.Name}
                                         </div>
-                                    ) : false}
-                                </div>
-                                <div className="app-plant-header__actions">
-                                    <ArchiveButton/>
+                                        <div className="app-plant-header__date">
+                                            <ClockCircleOutlined />
+                                            <span>{formatDate(plantPage.updatedAt)}</span>
+                                        </div>
+                                        {plantPage.category.data ? (
+                                            <div className="app-plant-header__category">
+                                                <AppstoreOutlined />
+                                                <span>{plantPage.category.data.attributes.Name}</span>
+                                            </div>
+                                        ) : false}
+                                    </div>
+                                    <div className="app-plant-header__actions">
+                                        <ArchiveButton/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : 'Растение не найдено'}
                         <Tabs
                             className="card-plant-tabs"
                             defaultActiveKey="1"
