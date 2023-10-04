@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown'
-import { useParams, Link, useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import qs from "qs"
 import { getToken } from "../../helpers";
-import { formatDate, countDays } from "../../publicHelpers";
-import remarkBreaks from "remark-breaks";
-import remarkGfm from "remark-gfm";
+import {countDays, formatDate, getPostfix} from "../../publicHelpers";
+import { Helmet } from 'react-helmet-async';
 
 import {
     Spin,
@@ -18,10 +17,17 @@ import {
     Popconfirm,
     Input,
     InputNumber,
-    Tag,
-    Tooltip
+    Tooltip,
+    notification,
+    Space
 } from "antd";
-import { SmileOutlined, CalendarOutlined, FileTextOutlined, LeftOutlined, PlusOutlined, BlockOutlined } from '@ant-design/icons';
+import {
+    SmileOutlined,
+    CalendarOutlined,
+    PlusOutlined,
+    BlockOutlined,
+    MinusSquareOutlined, ClockCircleOutlined, AppstoreOutlined
+} from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
@@ -34,22 +40,36 @@ dayjs.locale('ru-ru');
 const { TextArea } = Input;
 
 const Plant = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
+    const {id} = useParams()
 
     const [calFilter, setCalFilter] = useState([])
-    const [isLoading, setIsLoading] = useState(true);
-    const [plantPage, setPlantPage] = useState([]);
-    const [tags, setTags] = useState([]);
 
-    const {id} = useParams();
+    const [isLoading, setIsLoading] = useState(true)
+    const [plantPage, setPlantPage] = useState([])
+
+    const [tags, setTags] = useState([])
+
+    const [api, contextHolder] = notification.useNotification()
+
+    const plantPageQuery = qs.stringify({
+        populate: {
+            0: 'category',
+            1: 'weeks.days.tags.icon',
+            2: 'photo'
+        }
+    })
+
+    const defaultPageURL = `${process.env.REACT_APP_BACKEND}/api/plants/${id}?${plantPageQuery}`
 
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`)
-            .then(({ data }) => setPlantPage(data.data.attributes))
+            .get(defaultPageURL)
+            .then(({ data }) => {
+                setPlantPage(data.data.attributes)
+            })
             .catch((error) => {
-                // console.log(error)
-                navigate('/')
+                navigate('/404')
             });
 
         axios
@@ -59,7 +79,86 @@ const Plant = () => {
             })
             .catch((error) => console.log(error))
             .finally(() => setIsLoading(false));
-    }, [id, navigate]);
+    }, [defaultPageURL, navigate])
+
+    const openChangesNotification = () => {
+        const btn = (
+            <Space>
+                <SavePlantButton/>
+            </Space>
+        );
+
+        api.open({
+            message: 'Есть несохраненные изменения!',
+            duration: null,
+            // placement: 'bottom',
+            closeIcon: false,
+            className: 'app-changes-notify',
+            btn,
+            key: 'changes',
+        });
+    }
+
+    const SavePlantButton = () => {
+        const [isSaveLoading, setIsSaveLoading] = useState(false);
+
+        const tagsToIDs = (weeksArray) => {
+            weeksArray.forEach((weekItem) => {
+                weekItem.days.forEach((dayItem) => {
+                    let tagsArray = dayItem.tags.data;
+
+                    let netTagsArray = []
+
+                    tagsArray.forEach((tagItem) => netTagsArray.push(tagItem.id))
+
+                    dayItem.tags = netTagsArray
+                })
+            })
+        }
+
+        let onClickEvent = () => {
+            setIsSaveLoading(true)
+
+            const {weeks} = plantPage
+
+            tagsToIDs(weeks)
+
+            axios({
+                method: 'put',
+                url: defaultPageURL,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
+                    data: {
+                        weeks: weeks
+                    }
+                }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
+            }).catch(function (error) {
+                console.log(error);
+            }).finally(function () {
+                setIsSaveLoading(false)
+
+                api.destroy('changes')
+
+                api.open({
+                    message: 'Изменения сохранены',
+                    className: 'app-changes-notify',
+                    duration: 3,
+                    closeIcon: false,
+                    key: 'saved'
+                });
+            });
+        }
+
+        return (
+            <Button type="primary" size="small" loading={isSaveLoading} onClick={onClickEvent}>
+                {isSaveLoading ? 'Сохранение...' : 'Сохранить'}
+            </Button>
+        )
+    }
 
     const CalendarFilter = () => {
         const selectOptions = [];
@@ -166,12 +265,8 @@ const Plant = () => {
     }
 
     const DeleteDayButton = (data) => {
-        const [IsDeleteLoading, setIsDeleteLoading] = useState(false);
-
         let onClickEvent = (e) => {
             e.preventDefault()
-
-            setIsDeleteLoading(true)
 
             const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
             const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
@@ -183,27 +278,16 @@ const Plant = () => {
             // Remove empty values
             weeks[weekIndex].days = weeks[weekIndex].days.filter(n => n)
 
-            const thisDayElement = document.querySelectorAll('.week')[weekIndex].getElementsByClassName('day')[dayIndex]
+            // Визуал
+            // const thisDayElement = document.querySelectorAll('.week')[weekIndex].getElementsByClassName('day')[dayIndex]
+            // thisDayElement.classList.add('--deleted')
 
-            thisDayElement.classList.add('--deleted')
+            setPlantPage(plantPage => ({
+                ...plantPage,
+                ...weeks
+            }));
 
-            axios({
-                method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`
-                },
-                data: {
-                    data: {
-                        weeks: weeks
-                    }
-                }
-            }).then(function (response) {
-                setIsDeleteLoading(false)
-                setPlantPage(response.data.data.attributes)
-            }).catch(function (error) {
-                console.log(error);
-            });
+            openChangesNotification()
         }
 
         return (
@@ -215,8 +299,39 @@ const Plant = () => {
                 okText="Да"
                 cancelText="Нет"
             >
-                <Button type="primary" danger loading={IsDeleteLoading}>
+                <Button type="primary" danger>
                     Удалить день
+                </Button>
+            </Popconfirm>
+        )
+    }
+
+    const DeleteWeekButton = () => {
+        let onClickEvent = (e) => {
+            e.preventDefault()
+
+            const {weeks} = plantPage
+            weeks.pop()
+
+            setPlantPage(plantPage => ({
+                ...plantPage,
+                ...weeks
+            }));
+
+            openChangesNotification()
+        }
+
+        return (
+            <Popconfirm
+                title="Удалить неделю"
+                description="Вы действительно хотите удалить неделю ?"
+                onConfirm={onClickEvent}
+                onCancel={e => e.preventDefault()}
+                okText="Да"
+                cancelText="Нет"
+            >
+                <Button type="primary" danger icon={<MinusSquareOutlined />}>
+                    Удалить неделю
                 </Button>
             </Popconfirm>
         )
@@ -230,33 +345,39 @@ const Plant = () => {
 
         let isChanged = false
 
-        let onChangeEvent = (values) => {
-            dayObject.tags = values
-            isChanged = true
+        let mouseLeaveTimeOut = null
+
+        let setData = () => {
+            clearTimeout(mouseLeaveTimeOut);
+
+            if (isChanged) {
+                setPlantPage(plantPage => ({
+                    ...plantPage,
+                    ...weeks
+                }));
+
+                isChanged = false
+            }
         }
 
-        let onMouseLeave = () => {
-            if (isChanged) {
-                setTimeout(function () {
-                    axios({
-                        method: 'put',
-                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
-                        headers: {
-                            'Authorization': `Bearer ${getToken()}`
-                        },
-                        data: {
-                            data: {
-                                weeks: weeks
-                            }
-                        }
-                    }).then(function (response) {
-                        setPlantPage(response.data.data.attributes)
-                        isChanged = false
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                }, 300)
-            }
+        let onChangeEvent = (values) => {
+            clearTimeout(mouseLeaveTimeOut);
+
+            let newSelectedTags = []
+
+            values.forEach((value) => newSelectedTags.push(tags.find(tag => tag.id === value)))
+
+            dayObject.tags.data = newSelectedTags
+
+            isChanged = true
+
+            openChangesNotification()
+        }
+
+        let onMouseLeaveEvent = () => {
+            mouseLeaveTimeOut = setTimeout(function () {
+                setData()
+            }, 1500);
         }
 
         const selectOptions = [];
@@ -274,9 +395,7 @@ const Plant = () => {
                 value: tagItem.id,
             });
         })
-
         const defaultOptions = []
-
         dayObject.tags.data.forEach(function (tagItem) {
             defaultOptions.push(tagItem.id);
         })
@@ -294,102 +413,81 @@ const Plant = () => {
                     defaultValue={defaultOptions}
                     options={selectOptions}
                     onChange={onChangeEvent}
-                    onMouseLeave={onMouseLeave}
+                    onMouseLeave={onMouseLeaveEvent}
                 />
             </>
         )
     }
 
     const PassDayButton = (data) => {
-        const [IsPassLoading, setIsPassLoading] = useState(false);
-
-        let onClickEvent = (e) => {
-            e.preventDefault()
-
-            setIsPassLoading(true)
-
-            const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
-            const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
-            const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
-
-            const {weeks} = plantPage
-
-            weeks[weekIndex].days[dayIndex].passed = true
-
-            axios({
-                method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`
-                },
-                data: {
-                    data: {
-                        weeks: weeks
-                    }
-                }
-            }).then(function (response) {
-                setPlantPage(response.data.data.attributes)
-            }).catch(function (error) {
-                console.log(error);
-            }).finally(function () {
-                setIsPassLoading(false)
-            });
-        }
-
-        return (
-            <Button type="primary" onClick={onClickEvent} loading={IsPassLoading}>
-                Закрыть день
-            </Button>
-        )
-    };
-
-    const EditHumidity = (data) => {
-        const [IsHumLoading, setIsHumLoading] = useState(false);
-
         const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
         const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
 
         const {weeks} = plantPage
 
-        let onBlurEvent = (e) => {
-            setIsHumLoading(true)
+        let isPassed = weeks[weekIndex].days[dayIndex].passed;
 
-            if (weeks[weekIndex].days[dayIndex].humidity !== e.target.value) {
+        let onClickEvent = (e) => {
+            e.preventDefault()
+
+            isPassed ? weeks[weekIndex].days[dayIndex].passed = false : weeks[weekIndex].days[dayIndex].passed = true
+
+            setPlantPage(plantPage => ({
+                ...plantPage,
+                ...weeks
+            }));
+
+            openChangesNotification()
+        }
+
+        return (
+            <Button type="primary" onClick={onClickEvent}>
+                {isPassed ? 'Открыть день' : 'Закрыть день'}
+            </Button>
+        )
+    }
+
+    const EditHumidity = (data) => {
+        const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
+        const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
+        const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
+
+        const {weeks} = plantPage
+
+        let onFocusEvent = (e) => {
+            e.target.select()
+        }
+
+        let onBlurEvent = (e) => {
+            let dayHumidity = weeks[weekIndex].days[dayIndex].humidity
+
+            if (dayHumidity !== e.target.value) {
+                if (e.target.value > 100 || e.target.value < 0) {
+                    e.target.value = 0
+                }
+
                 weeks[weekIndex].days[dayIndex].humidity = e.target.value
 
-                axios({
-                    method: 'put',
-                    url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=weeks.days.tags.icon`,
-                    headers: {
-                        'Authorization': `Bearer ${getToken()}`
-                    },
-                    data: {
-                        data: {
-                            weeks: weeks
-                        }
-                    }
-                }).then(function (response) {
-                    setPlantPage(response.data.data.attributes)
-                }).catch(function (error) {
-                    console.log(error);
-                }).finally(function () {
-                    setIsHumLoading(false)
-                });
+                setPlantPage(plantPage => ({
+                    ...plantPage,
+                    ...weeks
+                }));
+
+                openChangesNotification()
             }
         }
 
         return (
             <>
-                <InputNumber onBlur={onBlurEvent} addonBefore={(
+                <InputNumber onFocus={onFocusEvent} onBlur={onBlurEvent} addonBefore={(
                     <div className={'app-humidity-input-placeholder'}>
                         <div>Влажность %</div>
-                        {IsHumLoading ? (<Spin size={"small"}/>) : false}
                     </div>
                 )} min={0} max={100} defaultValue={weeks[weekIndex].days[dayIndex].humidity ? weeks[weekIndex].days[dayIndex].humidity : 0} />
             </>
         )
-    };
+    }
 
     const WeekDescription = (data) => {
         const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
@@ -400,24 +498,12 @@ const Plant = () => {
             if (weeks[weekIndex].description !== e.target.value) {
                 weeks[weekIndex].description = e.target.value
 
-                setTimeout(function () {
-                    axios({
-                        method: 'put',
-                        url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
-                        headers: {
-                            'Authorization': `Bearer ${getToken()}`
-                        },
-                        data: {
-                            data: {
-                                weeks: weeks
-                            }
-                        }
-                    }).then(function (response) {
-                        setPlantPage(response.data.data.attributes)
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                }, 1000)
+                setPlantPage(plantPage => ({
+                    ...plantPage,
+                    ...weeks
+                }));
+
+                openChangesNotification()
             }
         }
 
@@ -434,7 +520,7 @@ const Plant = () => {
                 }}
             />
         )
-    };
+    }
 
     const AddWeekButton = () => {
         const [IsAddWeekLoading, setIsAddWeekLoading] = useState(false);
@@ -444,6 +530,7 @@ const Plant = () => {
         const onClickEvent = (e) => {
             e.preventDefault()
             setIsAddWeekLoading(true)
+            api.destroy('changes')
 
             let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
                 lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
@@ -486,7 +573,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: defaultPageURL,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -498,6 +585,13 @@ const Plant = () => {
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
                 setIsAddWeekLoading(false)
+                api.open({
+                    message: 'Изменения сохранены (+1 неделя)',
+                    className: 'app-changes-notify',
+                    duration: 3,
+                    closeIcon: false,
+                    key: 'saved'
+                });
             }).catch(function (error) {
                 console.log(error);
             });
@@ -508,7 +602,7 @@ const Plant = () => {
                 Добавить новую неделю
             </Button>
         )
-    };
+    }
 
     const AddOneDayButton = (data) => {
         const [IsAddOneDayLoading, setIsAddOneDayLoading] = useState(false);
@@ -517,6 +611,7 @@ const Plant = () => {
 
         const onClickEvent = (e) => {
             setIsAddOneDayLoading(true)
+            api.destroy('changes')
 
             let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
                 lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
@@ -537,7 +632,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: defaultPageURL,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -549,6 +644,13 @@ const Plant = () => {
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
                 setIsAddOneDayLoading(false)
+                api.open({
+                    message: 'Изменения сохранены (+1 день)',
+                    className: 'app-changes-notify',
+                    duration: 3,
+                    closeIcon: false,
+                    key: 'saved'
+                });
             }).catch(function (error) {
                 console.log(error);
             });
@@ -559,7 +661,7 @@ const Plant = () => {
                 1 день
             </Button>
         )
-    };
+    }
 
     const AddSevenDaysButton = (data) => {
         const [IsAddSevenDayLoading, setIsAddSevenDayLoading] = useState(false);
@@ -567,6 +669,7 @@ const Plant = () => {
 
         const onClickEvent = (e) => {
             setIsAddSevenDayLoading(true)
+            api.destroy('changes')
 
             let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
                 lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
@@ -606,7 +709,7 @@ const Plant = () => {
 
             axios({
                 method: 'put',
-                url: `${process.env.REACT_APP_BACKEND}/api/plants/${id}?populate[0]=categories&populate[1]=weeks.days.tags.icon`,
+                url: defaultPageURL,
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 },
@@ -618,6 +721,13 @@ const Plant = () => {
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
                 setIsAddSevenDayLoading(false)
+                api.open({
+                    message: 'Изменения сохранены (+7 дней)',
+                    className: 'app-changes-notify',
+                    duration: 3,
+                    closeIcon: false,
+                    key: 'saved'
+                });
             }).catch(function (error) {
                 console.log(error);
             });
@@ -628,7 +738,50 @@ const Plant = () => {
                 7 дней
             </Button>
         )
-    };
+    }
+
+    const ArchiveButton = () => {
+        const [archiveLoading, setArchiveLoading] = useState(false);
+
+        let onClickEvent = (e) => {
+            e.preventDefault()
+
+            api.destroy('changes')
+
+            setArchiveLoading(true)
+
+            axios({
+                method: 'put',
+                url: defaultPageURL,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                data: {
+                    data: {
+                        publishedAt: plantPage.publishedAt ? null : Date.now()
+                    }
+                }
+            }).then(function (response) {
+                setPlantPage(response.data.data.attributes)
+                setArchiveLoading(false)
+                api.open({
+                    message: plantPage.publishedAt ? 'Растение перенесено в архив' : 'Растение удалено из архива',
+                    className: 'app-changes-notify',
+                    duration: 3,
+                    closeIcon: false,
+                    key: 'archive'
+                });
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+        return (
+            <Button type="primary" onClick={onClickEvent} loading={archiveLoading}>
+                <span>{plantPage.publishedAt ? 'В архив' : 'Удалить из архива'}</span>
+            </Button>
+        )
+    }
 
     const DayIndex = (data) => {
         const {weeks} = plantPage
@@ -648,7 +801,7 @@ const Plant = () => {
                 {dayIndex + 1} День
             </div>
         )
-    };
+    }
 
     const WeekIndex = (props) => {
         let index = props.weekIndex + 1
@@ -677,8 +830,22 @@ const Plant = () => {
         return indexTitle
     }
 
+    const currentDate = () => {
+        const date = new Date();
+
+        let day = date.getDate();
+        let month = date.getMonth() + 1;
+        let year = date.getFullYear();
+
+        return `${day}-${month}-${year}`
+    }
+
     return (
         <>
+            <Helmet>
+                <title>{`${plantPage.Name ? plantPage.Name : 'Loading...'} - PlantDocs`}</title>
+            </Helmet>
+            {contextHolder}
             <Card className="app-card card-plant">
                 {isLoading ? (
                     <div className="app-plant-loader">
@@ -686,35 +853,40 @@ const Plant = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="app-plant-item app-plant-item_card-plant">
-                            <div className="app-plant-item__content">
-                                <div className="app-plant-item__days">{countDays(plantPage.weeks)}<span>дней</span></div>
-                                <div className="app-plant-item__name">
-                                    <Link className="app-plant-item__home-link" to="/">
-                                        <LeftOutlined />
-                                        <span>{plantPage.Name}</span>
-                                    </Link>
-                                </div>
-                                <div className="app-plant-item__date">
-                                    Последнее обновление:
-                                    <span>{formatDate(plantPage.updatedAt)}</span>
-                                </div>
-                                {plantPage.categories ? (
-                                    <div className="app-plant-item__categories">
-                                        <div className="app-plant-item__categories__title">Категории:</div>
-                                        {plantPage.categories.data.length ? plantPage.categories.data.map((cat_data) => (
-                                            <Tag bordered={false} key={cat_data.id}>
-                                                {cat_data.attributes.Name}
-                                            </Tag>
-                                        )) : (
-                                            <Tag bordered={false}>
-                                                Без категории
-                                            </Tag>
-                                        )}
-                                    </div>
+                        {/*
+                            plantPage.updatedAt ? - Баг, иначе ругается на дату (при ошибке 404)
+                         */}
+                        {plantPage.updatedAt ? (
+                            <div className="app-plant-header">
+                                {plantPage.photo ? (
+                                    <img className="app-plant-header__bg" src={plantPage.photo.data ? `${process.env.REACT_APP_BACKEND}${plantPage.photo.data.attributes.formats.small.url}` : ''} alt="null"/>
                                 ) : false}
+                                <div className="app-plant-header__content">
+                                    <div className="app-plant-header__days">
+                                        {countDays(plantPage.weeks)}
+                                        <span>{getPostfix(countDays(plantPage.weeks), 'день', 'дня', 'дней')}</span>
+                                    </div>
+                                    <div className="app-plant-header__info">
+                                        <div className="app-plant-header__title">
+                                            {plantPage.Name}
+                                        </div>
+                                        <div className="app-plant-header__date">
+                                            <ClockCircleOutlined />
+                                            <span>{formatDate(plantPage.updatedAt)}</span>
+                                        </div>
+                                        {plantPage.category.data ? (
+                                            <div className="app-plant-header__category">
+                                                <AppstoreOutlined />
+                                                <span>{plantPage.category.data.attributes.Name}</span>
+                                            </div>
+                                        ) : false}
+                                    </div>
+                                    <div className="app-plant-header__actions">
+                                        <ArchiveButton/>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        ) : 'Растение не найдено'}
                         <Tabs
                             className="card-plant-tabs"
                             defaultActiveKey="1"
@@ -724,7 +896,7 @@ const Plant = () => {
                                     label: (
                                         <div className="card-plant-tabs__label">
                                             <SmileOutlined />
-                                            Растение
+                                            Дни растения
                                         </div>
                                     ),
                                     children: (
@@ -755,9 +927,7 @@ const Plant = () => {
                                                                                         {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
                                                                                             <DeleteDayButton weekId={data.id} dayId={days_data.id} />
                                                                                         ) : false }
-                                                                                        {days_data.passed ? false : (
-                                                                                            <PassDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                        )}
+                                                                                        <PassDayButton weekId={data.id} dayId={days_data.id} />
                                                                                     </div>
                                                                                 </div>
                                                                             )}
@@ -802,7 +972,10 @@ const Plant = () => {
                                                                     <AddOneDayButton weekIndex={index} />
                                                                     <AddSevenDaysButton weekIndex={index} />
                                                                     {plantPage.weeks.length <= 14 ? (
-                                                                        <AddWeekButton />
+                                                                        <>
+                                                                            <DeleteWeekButton />
+                                                                            <AddWeekButton />
+                                                                        </>
                                                                     ) : false }
                                                                 </div>
                                                             ) : false }
@@ -818,7 +991,7 @@ const Plant = () => {
                                     label: (
                                         <div className="card-plant-tabs__label">
                                             <CalendarOutlined />
-                                            Календарь
+                                            Календарь ({formatDate(currentDate())})
                                         </div>
                                     ),
                                     children: (
@@ -830,43 +1003,7 @@ const Plant = () => {
                                             />
                                         </div>
                                     ),
-                                },
-                                plantPage.Content ? {
-                                    key: '3',
-                                    label: (
-                                        <div className="card-plant-tabs__label">
-                                            <FileTextOutlined />
-                                            Описание
-                                        </div>
-                                    ),
-                                    children: (
-                                        <div className="card-plant-tabs__content">
-                                            {plantPage.Content ? (
-                                                <>
-                                                    <div className="card-plant-tabs__plant-content">
-                                                        <ReactMarkdown
-                                                            transformImageUri={
-                                                                function (src) {
-                                                                    src = `${process.env.REACT_APP_BACKEND}${src}`
-                                                                    return src
-                                                                }
-                                                            }
-                                                            transformLinkUri={
-                                                                function (href) {
-                                                                    href = `${process.env.REACT_APP_BACKEND}${href}`
-                                                                    return href
-                                                                }
-                                                            }
-                                                            remarkPlugins={[remarkGfm, remarkBreaks]}
-                                                        >
-                                                            {plantPage.Content}
-                                                        </ReactMarkdown>
-                                                    </div>
-                                                </>
-                                            ) : false }
-                                        </div>
-                                    ),
-                                } : false
+                                }
                             ]}
                             onTabClick={function () {
                                 window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

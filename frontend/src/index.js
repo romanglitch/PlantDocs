@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from "react-router-dom";
+import {HelmetProvider} from 'react-helmet-async';
 
 // Routes
 import App from './routes/App';
@@ -15,10 +16,12 @@ const root = ReactDOM.createRoot(document.querySelector('.app'));
 
 root.render(
     <React.StrictMode>
-        <AuthProvider>
-            <Router>
-                <App />
-            </Router>
-        </AuthProvider>
+        <HelmetProvider>
+            <AuthProvider>
+                <Router>
+                    <App />
+                </Router>
+            </AuthProvider>
+        </HelmetProvider>
     </React.StrictMode>
 );

@@ -2,6 +2,8 @@
     height: auto;
     background: #fff;
     border-bottom: 1px solid #f7f7f7;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 .app-header-grid {
@@ -10,16 +12,28 @@
     justify-content: space-between;
 }
 
-.app-header-auth {
+.app-header-user {
+    line-height: normal;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 20px;
+    cursor: pointer;
+    gap: 12px;
 }
 
-.app-header-auth__info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.app-header-user__avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #f0f0f0;
+}
+
+.app-header-user__name {
     font-weight: 500;
+    text-transform: uppercase;
+}
+
+.app-header-user-content {
+    display: grid;
+    grid-gap: 8px;
 }

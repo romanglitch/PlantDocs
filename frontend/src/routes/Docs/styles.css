@@ -1,0 +1,10 @@
+.app-docs-content {
+    display: grid;
+    grid-gap: 12px;
+}
+
+.app-docs-content img {
+    display: block;
+    width: 100%;
+    max-width: 980px;
+}

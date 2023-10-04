@@ -1,4 +1,5 @@
 import React from 'react';
+import LogoSVG from './Logo.svg';
 
 // Styles
 import './styles.css';
@@ -6,7 +7,7 @@ import './styles.css';
 const Logo = () => {
     return (
         <div className="app-logo">
-            <b>P</b>lant<b>D</b>ocs
+            <img className="app-logo__image" src={LogoSVG} alt="PlantDocs - plants & docs application" />
         </div>
     );
 }
