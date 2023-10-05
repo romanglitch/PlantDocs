@@ -1,3 +1,1 @@
-# plant-docs)
-
-dev server api, front-ned
+# PlantDocs Application (Backend/Frontend)
