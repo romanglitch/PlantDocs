@@ -458,7 +458,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 18px;
-    background: rgb(22 119 255 / 59%);
+    background: rgb(22 119 255 / 19%);
 }
 
 .app-plant-header__days {

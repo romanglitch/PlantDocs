@@ -896,7 +896,7 @@ const Plant = () => {
                                     label: (
                                         <div className="card-plant-tabs__label">
                                             <SmileOutlined />
-                                            Дни растения
+                                            Растение ({`${countDays(plantPage.weeks)} ${getPostfix(countDays(plantPage.weeks), 'день', 'дня', 'дней')}`})
                                         </div>
                                     ),
                                     children: (
