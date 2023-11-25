@@ -17,11 +17,11 @@ const root = ReactDOM.createRoot(document.querySelector('.app'));
 root.render(
     <React.StrictMode>
         <HelmetProvider>
-            <AuthProvider>
                 <Router>
-                    <App />
+                    <AuthProvider>
+                        <App />
+                    </AuthProvider>
                 </Router>
-            </AuthProvider>
         </HelmetProvider>
     </React.StrictMode>
 );

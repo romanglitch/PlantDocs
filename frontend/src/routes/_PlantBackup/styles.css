@@ -1,0 +1,518 @@
+.card-plant-tabs .ant-tabs-tab {
+    padding-top: 0;
+}
+
+.card-plant-tabs__weeks {
+    display: grid;
+    grid-gap: 30px;
+}
+
+.week__title {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #1b7aff;
+}
+
+.week__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-gap: 25px;
+    transition: all .33s ease;
+}
+
+.day {
+    background: #fff;
+    border: 1px solid #e1eeff;
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: grid;
+    grid-gap: 10px;
+    align-content: flex-start;
+    transition: all .33s ease;
+}
+
+.popover-content {
+    display: grid;
+    grid-gap: 10px;
+}
+
+.day:hover {
+    box-shadow: 0 2px 7px 1px rgb(0 0 0 / 4%);
+}
+
+.day.ant-popover-open {
+    box-shadow: 0 5px 20px 6px rgb(27 122 255 / 16%);
+}
+
+.day.--deleted {
+    box-shadow: 0 5px 20px 6px rgb(0 0 0 / 8%),
+    inset 0 0 0 2px #ef1b1b;
+}
+
+.week__description {
+    margin-bottom: 18px;
+}
+
+.test-btn {
+    padding: 10px;
+    margin: 10px auto 0;
+    width: max-content;
+    display: block;
+    background: #ddd;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.calendar-day-info {
+    display: grid;
+    align-content: flex-start;
+    justify-content: flex-start;
+    background: #fbfbfb;
+    border-radius: 8px;
+    padding: 6px 10px;
+    gap: 1px;
+    box-shadow: inset 0 0 0 1px #f0f0f0;
+}
+
+.calendar-day-info:empty {
+    display: none;
+}
+
+.calendar-day-info.--passed {
+    box-shadow: inset 0 0 0 2px #21d388;
+}
+
+.card-plant-tabs__calendar .ant-picker-cell .ant-picker-cell-inner .ant-picker-calendar-date-content {
+    height: 175px;
+    padding-bottom: 5px;
+    overflow: visible;
+}
+
+.app-plant-item__home-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.app-plant-item__home-link .anticon {
+    margin-top: 1px;
+}
+
+.app-plant-item.app-plant-item_card-plant {
+    margin-bottom: 24px;
+}
+
+.card-plant-tabs .ant-tabs-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgb(255 255 255 / 80%);
+    backdrop-filter: blur(24px);
+    margin: -10px -24px 24px -24px;
+    padding: 10px 24px 0;
+}
+
+.day.--archived {
+    opacity: .4;
+    transform: scale(.94);
+}
+
+.week {
+    background: linear-gradient(45deg, rgb(22 119 255 / 3%), transparent);
+    border-radius: 8px;
+    border: 1px solid rgb(22 119 255 / 3%);
+    padding: 24px;
+}
+
+.day__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.day__title__text {
+    font-size: 18px;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.day__title__date {
+    background: #1b7aff;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 0 5px;
+}
+
+.day__humidity {
+    background: rgb(22 119 255 / 3%);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
+    line-height: 28px;
+}
+
+.day__humidity__title {
+    font-weight: 300;
+    font-size: 14px;
+    color: #1b7aff;
+}
+
+.day__humidity__value {
+    font-size: 48px;
+    font-weight: 400;
+    color: #1b7aff;
+}
+
+.day__humidity__value small {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.day__tags {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .33s ease;
+}
+
+.tag__icon {
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+    display: block;
+}
+
+.select-tags-option__icon {
+    width: 18px;
+    height: 18px;
+}
+
+.select-tags-option {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.day.--passed {
+    background: #1b7aff;
+    color: #fff;
+}
+
+.day.--passed .day__title__date {
+    background: #fff;
+    color: #000;
+}
+
+.day.--passed .day__humidity {
+    background: rgb(180 211 255 / 5%);
+}
+
+.day.--passed .day__humidity__title {
+    color: #fff;
+}
+
+.day.--passed .day__humidity__value {
+    color: #fff;
+}
+
+.day.--passed .tag {
+    pointer-events: auto;
+}
+
+.popover-content__grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.popover-content__grid > button {
+    width: 100%;
+}
+
+.week__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    gap: 24px;
+}
+
+.week__buttons > button:nth-child(2) {
+    margin-right: auto;
+}
+
+.card-plant-tabs__plant-content {
+    display: grid;
+    grid-gap: 24px;
+    font-size: 16px;
+}
+
+.card-plant-tabs__plant-content ul,
+.card-plant-tabs__plant-content ol {
+    list-style: none;
+    display: grid;
+    grid-gap: 5px;
+}
+
+.card-plant-tabs__plant-content li {
+    padding-left: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.card-plant-tabs__plant-content li:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #1677ff;
+}
+
+.app-calendar-item__tags {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    transition: all .33s ease;
+}
+
+.app-calendar-day {
+    background: #fff;
+    border: 1px solid #e1eeff;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: grid;
+    grid-gap: 10px;
+    align-content: flex-start;
+    box-shadow: 0 5px 17px -5px rgb(0 0 0 / 15%);
+    transition: all .33s ease;
+}
+
+.app-calendar-day.--passed {
+    background: #1b7aff;
+    color: #fff;
+    border-color: #1b7aff;
+}
+
+.app-calendar-item__humidity {
+    background: rgb(22 119 255 / 3%);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0 3px;
+    line-height: 28px;
+}
+
+.app-calendar-day.--passed .app-calendar-item__humidity {
+    background: rgb(180 211 255 / 5%);
+}
+
+.app-calendar-item__humidity__title {
+    font-weight: 300;
+    font-size: 14px;
+    color: #1b7aff;
+}
+
+.app-calendar-day.--passed .app-calendar-item__humidity__title {
+    color: #fff;
+}
+
+.app-calendar-item__humidity__value {
+    font-size: 32px;
+    font-weight: 400;
+    color: #1b7aff;
+}
+
+.app-calendar-day.--passed .app-calendar-item__humidity__value {
+    color: #fff;
+}
+
+.app-calendar-item__humidity__value small {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.app-calendar-day.--selected {
+    border: 3px solid #1e5bb1;
+}
+
+.app-calendar-select {
+    margin-bottom: -44px;
+    display: block;
+}
+
+.app-calendar-item__tags.--filter-active .app-calendar-tag {
+    filter: blur(5px);
+    opacity: .6;
+    pointer-events: none;
+}
+
+.app-calendar-item__tags.--filter-active .app-calendar-tag.--filtered {
+    filter: blur(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.app-calendar-day.--filter-day {
+    box-shadow: 1px 6px 10px 1px rgb(82 82 82 / 42%);
+    border-color: #1b7aff;
+    transform: scale(1.07);
+}
+
+.ant-picker-calendar-date-value {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.card-plant-tabs__calendar.--filter-active .app-calendar-day:not(.--filter-day) {
+    opacity: .5;
+    filter: blur(2px);
+}
+
+.app-humidity-input-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.ant-notification-notice.app-changes-notify .ant-notification-notice-description {
+    display: none;
+}
+
+.ant-notification-notice.app-changes-notify .ant-notification-notice-content > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.ant-notification-notice.app-changes-notify .ant-notification-notice-btn {
+    margin-top: 0;
+    float: none;
+}
+
+.ant-notification-notice.app-changes-notify .ant-notification-notice-message {
+    margin-bottom: 0;
+    font-size: 15px;
+}
+
+.ant-notification-notice.app-changes-notify {
+    padding: 12px;
+    width: max-content;
+}
+
+.app-plant-header {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 5px 8px rgb(0 0 0 / 5%);
+    color: #ffffff;
+}
+
+.app-plant-header__bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    background: #1f1f1f;
+    color: transparent;
+}
+
+.app-plant-header__content {
+    backdrop-filter: blur(24px);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 18px;
+    background: rgb(22 119 255 / 19%);
+}
+
+.app-plant-header__days {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 44px;
+    font-size: 62px;
+    font-weight: 700;
+    border-right: 1px solid #ffffff;
+    padding-right: 18px;
+    padding-top: 16px;
+}
+
+.app-plant-header__days span {
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.app-plant-header__info {
+    display: grid;
+    line-height: normal;
+    grid-gap: 8px;
+}
+
+.app-plant-header__title {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.app-plant-header__date, .app-plant-header__category {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.app-plant-header__category {
+    font-weight: 500;
+}
+
+.app-plant-header__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-left: auto;
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px;
+    width: max-content;
+}
+
+.app-plant-header__actions > button {
+    min-width: 160px;
+}
