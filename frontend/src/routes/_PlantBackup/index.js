@@ -515,6 +515,7 @@ const Plant = () => {
         const onClickEvent = (e) => {
             e.preventDefault()
             setIsAddWeekLoading(true)
+            api.destroy('changes')
 
             let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
                 lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
@@ -569,6 +570,13 @@ const Plant = () => {
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
                 setIsAddWeekLoading(false)
+                api.open({
+                    message: 'Изменения сохранены (+1 неделя)',
+                    className: 'app-changes-notify',
+                    duration: 3,
+                    closeIcon: false,
+                    key: 'saved'
+                });
             }).catch(function (error) {
                 console.log(error);
             });
@@ -638,6 +646,7 @@ const Plant = () => {
 
         const onClickEvent = (e) => {
             setIsAddSevenDayLoading(true)
+            api.destroy('changes')
 
             let findWeeksByDays = weeks.filter(week => week.days.length !== 0),
                 lastWeekByDays = findWeeksByDays[findWeeksByDays.length - 1],
@@ -689,6 +698,13 @@ const Plant = () => {
             }).then(function (response) {
                 setPlantPage(response.data.data.attributes)
                 setIsAddSevenDayLoading(false)
+                api.open({
+                    message: 'Изменения сохранены (+7 дней)',
+                    className: 'app-changes-notify',
+                    duration: 3,
+                    closeIcon: false,
+                    key: 'saved'
+                });
             }).catch(function (error) {
                 console.log(error);
             });
@@ -925,9 +941,9 @@ const Plant = () => {
                                                                 <div className="week__buttons">
                                                                     <AddOneDayButton weekIndex={index} />
                                                                     <AddSevenDaysButton weekIndex={index} />
-                                                                    <DeleteWeekButton />
                                                                     {plantPage.weeks.length <= 14 ? (
                                                                         <>
+                                                                            <DeleteWeekButton />
                                                                             <AddWeekButton />
                                                                         </>
                                                                     ) : false }
