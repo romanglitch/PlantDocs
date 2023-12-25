@@ -36,6 +36,7 @@
 .popover-content {
     display: grid;
     grid-gap: 10px;
+    transition: all .33s ease;
 }
 
 .day:hover {
@@ -515,4 +516,16 @@
 
 .app-plant-header__actions > button {
     min-width: 160px;
+}
+
+.app-card.card-plant.--updating .day,
+.popover-content.--updating {
+    filter: grayscale(.2);
+    opacity: .8;
+    pointer-events: none;
+    cursor: default;
+}
+
+body.--loading {
+    opacity: .7 !important;
 }

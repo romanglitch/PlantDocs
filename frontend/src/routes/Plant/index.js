@@ -28,6 +28,8 @@ import {
     MinusSquareOutlined, ClockCircleOutlined, AppstoreOutlined
 } from '@ant-design/icons';
 
+import DayCard from "../../components/DayCard";
+
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
 
@@ -867,56 +869,16 @@ const Plant = () => {
                                                             </div>
                                                             <div className="week__days">
                                                                 {
-                                                                    data.days.map((days_data, dayIndex) => (
-                                                                        <Popover
-                                                                            trigger="click"
-                                                                            placement="top"
-                                                                            key={days_data.id}
-                                                                            content={(
-                                                                                <div className={'popover-content'}>
-                                                                                    <SelectTags weekId={data.id} dayId={days_data.id} />
-                                                                                    <EditHumidity weekId={data.id} dayId={days_data.id} />
-                                                                                    <div className="popover-content__grid">
-                                                                                        {/* If this week is last && If this day is last */}
-                                                                                        {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
-                                                                                            <DeleteDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                        ) : false }
-                                                                                        <PassDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                    </div>
-                                                                                </div>
-                                                                            )}
-                                                                        >
-                                                                            <div className={`day${days_data.passed ? ' --passed' : ''}${(dayIndex + 1) === data.days.length ? ' --last' : ''}`}>
-                                                                                <div className="day__title">
-                                                                                    <DayIndex thisDayIndex={dayIndex} thisDayId={days_data.id} thisWeekIndex={index}/>
-                                                                                    <div className="day__title__date">
-                                                                                        {formatDate(days_data.date)}
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="day__humidity">
-                                                                                    <div className="day__humidity__title">
-                                                                                        Влажность:
-                                                                                    </div>
-                                                                                    <div className="day__humidity__value">
-                                                                                        {days_data.humidity ? `${days_data.humidity}` : `0`}
-                                                                                        <small>%</small>
-                                                                                    </div>
-                                                                                </div>
-                                                                                {days_data.tags.data ? (
-                                                                                    <div className="day__tags">
-                                                                                        {days_data.tags.data.map((tags_data) => (
-                                                                                            <Tooltip placement="bottom" title={tags_data.attributes.name} key={tags_data.id}>
-                                                                                                <div className="tag">
-                                                                                                    {tags_data.attributes.icon.data ? (
-                                                                                                        <img className="tag__icon" src={`${process.env.REACT_APP_BACKEND}${tags_data.attributes.icon.data.attributes.url}`} alt={tags_data.attributes.name}/>
-                                                                                                    ) : false}
-                                                                                                </div>
-                                                                                            </Tooltip>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                ) : false}
-                                                                            </div>
-                                                                        </Popover>
+                                                                    data.days.map((day_data, dayIndex) => (
+                                                                        <DayCard
+                                                                            key={day_data.id}
+                                                                            tags={tags}
+                                                                            dayData={day_data}
+                                                                            dayIndex={dayIndex}
+                                                                            weekId={data.id}
+                                                                            weekIndex={index}
+                                                                            plantPage={plantPage}
+                                                                        />
                                                                     ))
                                                                 }
                                                             </div>

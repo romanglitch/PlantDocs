@@ -1,0 +1,14 @@
+.app-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-logo__image {
+    width: 160px;
+}
+
+.day.--loading {
+    opacity: .7;
+    transform: scale(.98);
+}
