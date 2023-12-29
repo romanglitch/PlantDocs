@@ -47,11 +47,6 @@
     box-shadow: 0 5px 20px 6px rgb(27 122 255 / 16%);
 }
 
-.day.--deleted {
-    box-shadow: 0 5px 20px 6px rgb(0 0 0 / 8%),
-    inset 0 0 0 2px #ef1b1b;
-}
-
 .week__description {
     margin-bottom: 18px;
 }

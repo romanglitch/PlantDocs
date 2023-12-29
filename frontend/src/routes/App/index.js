@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { ConfigProvider, Layout } from "antd";
 import ruRU from 'antd/locale/ru_RU';
 

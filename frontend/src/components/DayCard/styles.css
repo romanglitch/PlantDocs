@@ -1,14 +1,35 @@
-.app-logo {
+.day.--loading {
+    opacity: .7;
+    transform: scale(.98);
+}
+
+.day.--deleted {
+    filter: grayscale(1);
+}
+
+.day.--loading .ant-spin.ant-spin-lg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.app-logo__image {
-    width: 160px;
+.day.--loading .ant-spin.ant-spin-lg .ant-spin-dot.ant-spin-dot-spin {
+    font-size: 105px;
 }
 
-.day.--loading {
-    opacity: .7;
-    transform: scale(.98);
+.day.--passed.--loading .ant-spin.ant-spin-lg .ant-spin-dot-item {
+    background: #fff;
+    width: 33px;
+    height: 33px;
+}
+
+.day.--loading .ant-spin.ant-spin-lg .ant-spin-dot-item {
+    background: #1677ff;
+    width: 33px;
+    height: 33px;
 }
