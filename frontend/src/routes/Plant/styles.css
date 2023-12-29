@@ -36,6 +36,7 @@
 .popover-content {
     display: grid;
     grid-gap: 10px;
+    transition: all .33s ease;
 }
 
 .day:hover {
@@ -44,11 +45,6 @@
 
 .day.ant-popover-open {
     box-shadow: 0 5px 20px 6px rgb(27 122 255 / 16%);
-}
-
-.day.--deleted {
-    box-shadow: 0 5px 20px 6px rgb(0 0 0 / 8%),
-    inset 0 0 0 2px #ef1b1b;
 }
 
 .week__description {
@@ -515,4 +511,16 @@
 
 .app-plant-header__actions > button {
     min-width: 160px;
+}
+
+.app-card.card-plant.--updating .day,
+.popover-content.--updating {
+    filter: grayscale(.2);
+    opacity: .8;
+    pointer-events: none;
+    cursor: default;
+}
+
+body.--loading {
+    opacity: .7 !important;
 }

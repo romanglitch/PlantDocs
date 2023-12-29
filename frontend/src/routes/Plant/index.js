@@ -12,13 +12,10 @@ import {
     Button,
     Tabs,
     Calendar,
-    Popover,
     Select,
     Popconfirm,
     Input,
-    InputNumber,
-    Tooltip,
-    notification
+    Tooltip
 } from "antd";
 import {
     SmileOutlined,
@@ -27,6 +24,8 @@ import {
     BlockOutlined,
     MinusSquareOutlined, ClockCircleOutlined, AppstoreOutlined
 } from '@ant-design/icons';
+
+import DayCard from "../../components/DayCard";
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
@@ -48,8 +47,6 @@ const Plant = () => {
     const [plantPage, setPlantPage] = useState([])
 
     const [tags, setTags] = useState([])
-
-    const [api, contextHolder] = notification.useNotification()
 
     const plantPageQuery = qs.stringify({
         populate: {
@@ -79,19 +76,6 @@ const Plant = () => {
             .catch((error) => console.log(error))
             .finally(() => setIsLoading(false));
     }, [defaultPageURL, navigate])
-
-    // for test commit
-
-    const openChangesNotification = () => {
-        api.open({
-            message: 'Есть несохраненные изменения!',
-            duration: null,
-            // placement: 'bottom',
-            closeIcon: false,
-            className: 'app-changes-notify',
-            key: 'changes',
-        });
-    }
 
     const CalendarFilter = () => {
         const selectOptions = [];
@@ -197,27 +181,15 @@ const Plant = () => {
         return false;
     }
 
-    const DeleteDayButton = (data) => {
-        const [IsDeleteLoading, setIsDeleteLoading] = useState(false);
+    const DeleteWeekButton = () => {
+        const [deleteWeekLoading, setDeleteWeekLoading] = useState(false);
 
         let onClickEvent = (e) => {
             e.preventDefault()
-
-            setIsDeleteLoading(true)
-
-            const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
-            const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
-            const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
+            setDeleteWeekLoading(true)
 
             const {weeks} = plantPage
-            delete weeks[weekIndex].days[dayIndex]
-
-            // Remove empty values
-            weeks[weekIndex].days = weeks[weekIndex].days.filter(n => n)
-
-            const thisDayElement = document.querySelectorAll('.week')[weekIndex].getElementsByClassName('day')[dayIndex]
-
-            thisDayElement.classList.add('--deleted')
+            weeks.pop()
 
             axios({
                 method: 'put',
@@ -230,43 +202,16 @@ const Plant = () => {
                         weeks: weeks
                     }
                 }
-            }).then(function (response) {
-                setIsDeleteLoading(false)
-                setPlantPage(response.data.data.attributes)
+            }).then(function () {
+                setPlantPage(plantPage => ({
+                    ...plantPage,
+                    ...weeks
+                }))
             }).catch(function (error) {
                 console.log(error);
+            }).finally(function () {
+                setDeleteWeekLoading(false)
             });
-        }
-
-        return (
-            <Popconfirm
-                title="Удалить день"
-                description="Вы действительно хотите удалить день ?"
-                onConfirm={onClickEvent}
-                onCancel={e => e.preventDefault()}
-                okText="Да"
-                cancelText="Нет"
-            >
-                <Button type="primary" danger loading={IsDeleteLoading}>
-                    Удалить день
-                </Button>
-            </Popconfirm>
-        )
-    }
-
-    const DeleteWeekButton = () => {
-        let onClickEvent = (e) => {
-            e.preventDefault()
-
-            const {weeks} = plantPage
-            weeks.pop()
-
-            setPlantPage(plantPage => ({
-                ...plantPage,
-                ...weeks
-            }));
-
-            openChangesNotification()
         }
 
         return (
@@ -278,183 +223,12 @@ const Plant = () => {
                 okText="Да"
                 cancelText="Нет"
             >
-                <Button type="primary" danger icon={<MinusSquareOutlined />}>
+                <Button type="primary" danger icon={<MinusSquareOutlined />} loading={deleteWeekLoading}>
                     Удалить неделю
                 </Button>
             </Popconfirm>
         )
     }
-
-    const SelectTags = (data) => {
-        const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
-        const dayObject = weekObject.days.find(item => item.id === data.dayId);
-
-        const {weeks} = plantPage
-
-        let isChanged = false
-
-        let onChangeEvent = (values) => {
-            dayObject.tags = values
-            isChanged = true
-        }
-
-        let onMouseLeave = () => {
-            if (isChanged) {
-                setTimeout(function () {
-                    axios({
-                        method: 'put',
-                        url: defaultPageURL,
-                        headers: {
-                            'Authorization': `Bearer ${getToken()}`
-                        },
-                        data: {
-                            data: {
-                                weeks: weeks
-                            }
-                        }
-                    }).then(function (response) {
-                        setPlantPage(response.data.data.attributes)
-                        isChanged = false
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                }, 300)
-            }
-        }
-
-        const selectOptions = [];
-
-        tags.forEach(function (tagItem) {
-            selectOptions.push({
-                label: (
-                    <div className="select-tags-option">
-                        {tagItem.attributes.icon.data ? (
-                            <img className="select-tags-option__icon" src={`${process.env.REACT_APP_BACKEND}${tagItem.attributes.icon.data.attributes.url}`} alt={tagItem.attributes.name}/>
-                        ) : false}
-                        {tagItem.attributes.name}
-                    </div>
-                ),
-                value: tagItem.id,
-            });
-        })
-
-        const defaultOptions = []
-
-        dayObject.tags.data.forEach(function (tagItem) {
-            defaultOptions.push(tagItem.id);
-        })
-
-        return (
-            <>
-                <Select
-                    showSearch={false}
-                    mode="multiple"
-                    allowClear
-                    style={{
-                        width: '320px',
-                    }}
-                    placeholder="Теги"
-                    defaultValue={defaultOptions}
-                    options={selectOptions}
-                    onChange={onChangeEvent}
-                    onMouseLeave={onMouseLeave}
-                />
-            </>
-        )
-
-    }
-
-    const PassDayButton = (data) => {
-        const [IsPassLoading, setIsPassLoading] = useState(false);
-        const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
-        const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
-        const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
-
-        const {weeks} = plantPage
-
-        let isPassed = weeks[weekIndex].days[dayIndex].passed;
-
-        let onClickEvent = (e) => {
-            e.preventDefault()
-
-            setIsPassLoading(true)
-
-            isPassed ? weeks[weekIndex].days[dayIndex].passed = false : weeks[weekIndex].days[dayIndex].passed = true
-
-            axios({
-                method: 'put',
-                url: defaultPageURL,
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`
-                },
-                data: {
-                    data: {
-                        weeks: weeks
-                    }
-                }
-            }).then(function (response) {
-                setPlantPage(response.data.data.attributes)
-            }).catch(function (error) {
-                console.log(error);
-            }).finally(function () {
-                setIsPassLoading(false)
-            });
-        }
-
-        return (
-            <Button type="primary" onClick={onClickEvent} loading={IsPassLoading}>
-                {isPassed ? 'Открыть день' : 'Закрыть день'}
-            </Button>
-        )
-    }
-
-    const EditHumidity = (data) => {
-        const [IsHumLoading, setIsHumLoading] = useState(false);
-
-        const weekObject = plantPage.weeks.find(item => item.id === data.weekId);
-        const weekIndex = plantPage.weeks.findIndex(item => item.id === data.weekId);
-        const dayIndex = weekObject.days.findIndex(item => item.id === data.dayId);
-
-        const {weeks} = plantPage
-
-        let onBlurEvent = (e) => {
-            setIsHumLoading(true)
-
-            if (weeks[weekIndex].days[dayIndex].humidity !== e.target.value) {
-                weeks[weekIndex].days[dayIndex].humidity = e.target.value
-
-                axios({
-                    method: 'put',
-                    url: defaultPageURL,
-                    headers: {
-                        'Authorization': `Bearer ${getToken()}`
-                    },
-                    data: {
-                        data: {
-                            weeks: weeks
-                        }
-                    }
-                }).then(function (response) {
-                    setPlantPage(response.data.data.attributes)
-                }).catch(function (error) {
-                    console.log(error);
-                }).finally(function () {
-                    setIsHumLoading(false)
-                });
-            }
-        }
-
-        return (
-            <>
-                <InputNumber onBlur={onBlurEvent} addonBefore={(
-                    <div className={'app-humidity-input-placeholder'}>
-                        <div>Влажность %</div>
-                        {IsHumLoading ? (<Spin size={"small"}/>) : false}
-                    </div>
-                )} min={0} max={100} defaultValue={weeks[weekIndex].days[dayIndex].humidity ? weeks[weekIndex].days[dayIndex].humidity : 0} />
-            </>
-        )
-    };
 
     const WeekDescription = (data) => {
         const [isLoading, setIsLoading] = useState(false);
@@ -707,8 +481,6 @@ const Plant = () => {
         let onClickEvent = (e) => {
             e.preventDefault()
 
-            api.destroy('changes')
-
             setArchiveLoading(true)
 
             axios({
@@ -723,8 +495,10 @@ const Plant = () => {
                     }
                 }
             }).then(function (response) {
-                setPlantPage(response.data.data.attributes)
-                setArchiveLoading(false)
+                setTimeout(function () {
+                    setPlantPage(response.data.data.attributes)
+                    setArchiveLoading(false)
+                }, 300)
             }).catch(function (error) {
                 console.log(error);
             });
@@ -734,26 +508,6 @@ const Plant = () => {
             <Button type="primary" onClick={onClickEvent} loading={archiveLoading}>
                 <span>{plantPage.publishedAt ? 'В архив' : 'Удалить из архива'}</span>
             </Button>
-        )
-    }
-
-    const DayIndex = (data) => {
-        const {weeks} = plantPage
-
-        let daysArray = []
-
-        weeks.forEach(function (weekItem) {
-            weekItem.days.forEach(function (dayItem) {
-                daysArray.push(dayItem)
-            })
-        })
-
-        const dayIndex = daysArray.findIndex(item => item.id === data.thisDayId);
-
-        return (
-            <div className="day__title__text">
-                {dayIndex + 1} День
-            </div>
         )
     }
 
@@ -799,7 +553,6 @@ const Plant = () => {
             <Helmet>
                 <title>{`${plantPage.Name ? plantPage.Name : 'Loading...'} - PlantDocs`}</title>
             </Helmet>
-            {contextHolder}
             <Card className="app-card card-plant">
                 {isLoading ? (
                     <div className="app-plant-loader">
@@ -867,56 +620,19 @@ const Plant = () => {
                                                             </div>
                                                             <div className="week__days">
                                                                 {
-                                                                    data.days.map((days_data, dayIndex) => (
-                                                                        <Popover
-                                                                            trigger="click"
-                                                                            placement="top"
-                                                                            key={days_data.id}
-                                                                            content={(
-                                                                                <div className={'popover-content'}>
-                                                                                    <SelectTags weekId={data.id} dayId={days_data.id} />
-                                                                                    <EditHumidity weekId={data.id} dayId={days_data.id} />
-                                                                                    <div className="popover-content__grid">
-                                                                                        {/* If this week is last && If this day is last */}
-                                                                                        {(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length ? (
-                                                                                            <DeleteDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                        ) : false }
-                                                                                        <PassDayButton weekId={data.id} dayId={days_data.id} />
-                                                                                    </div>
-                                                                                </div>
-                                                                            )}
-                                                                        >
-                                                                            <div className={`day${days_data.passed ? ' --passed' : ''}${(dayIndex + 1) === data.days.length ? ' --last' : ''}`}>
-                                                                                <div className="day__title">
-                                                                                    <DayIndex thisDayIndex={dayIndex} thisDayId={days_data.id} thisWeekIndex={index}/>
-                                                                                    <div className="day__title__date">
-                                                                                        {formatDate(days_data.date)}
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="day__humidity">
-                                                                                    <div className="day__humidity__title">
-                                                                                        Влажность:
-                                                                                    </div>
-                                                                                    <div className="day__humidity__value">
-                                                                                        {days_data.humidity ? `${days_data.humidity}` : `0`}
-                                                                                        <small>%</small>
-                                                                                    </div>
-                                                                                </div>
-                                                                                {days_data.tags.data ? (
-                                                                                    <div className="day__tags">
-                                                                                        {days_data.tags.data.map((tags_data) => (
-                                                                                            <Tooltip placement="bottom" title={tags_data.attributes.name} key={tags_data.id}>
-                                                                                                <div className="tag">
-                                                                                                    {tags_data.attributes.icon.data ? (
-                                                                                                        <img className="tag__icon" src={`${process.env.REACT_APP_BACKEND}${tags_data.attributes.icon.data.attributes.url}`} alt={tags_data.attributes.name}/>
-                                                                                                    ) : false}
-                                                                                                </div>
-                                                                                            </Tooltip>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                ) : false}
-                                                                            </div>
-                                                                        </Popover>
+                                                                    data.days.map((day_data, dayIndex) => (
+                                                                        <DayCard
+                                                                            key={day_data.id}
+                                                                            tags={tags}
+                                                                            dayData={day_data}
+                                                                            dayIndex={dayIndex}
+                                                                            weekId={data.id}
+                                                                            weekIndex={index}
+                                                                            weekData={data}
+                                                                            plantPage={plantPage}
+                                                                            isLast={(index + 1) === plantPage.weeks.length && (dayIndex + 1) === data.days.length}
+                                                                            setPlantPageState={setPlantPage}
+                                                                        />
                                                                     ))
                                                                 }
                                                             </div>
