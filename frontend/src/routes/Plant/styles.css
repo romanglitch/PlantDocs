@@ -11,7 +11,7 @@
     font-size: 24px;
     font-weight: 500;
     margin-bottom: 8px;
-    color: #1b7aff;
+    color: var(--theme-token-colorPrimary);
 }
 
 .week__days {
@@ -138,7 +138,7 @@
 }
 
 .day__title__date {
-    background: #1b7aff;
+    background: var(--theme-token-colorPrimary);
     color: #fff;
     font-size: 14px;
     border-radius: 8px;
@@ -159,13 +159,13 @@
 .day__humidity__title {
     font-weight: 300;
     font-size: 14px;
-    color: #1b7aff;
+    color: var(--theme-token-colorPrimary);
 }
 
 .day__humidity__value {
     font-size: 48px;
     font-weight: 400;
-    color: #1b7aff;
+    color: var(--theme-token-colorPrimary);
 }
 
 .day__humidity__value small {
@@ -209,7 +209,7 @@
 }
 
 .day.--passed {
-    background: #1b7aff;
+    background: var(--theme-token-colorPrimary);
     color: #fff;
 }
 
@@ -284,7 +284,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #1677ff;
+    background: var(--theme-token-colorPrimary);
 }
 
 .app-calendar-item__tags {
@@ -310,9 +310,9 @@
 }
 
 .app-calendar-day.--passed {
-    background: #1b7aff;
+    background: var(--theme-token-colorPrimary);
     color: #fff;
-    border-color: #1b7aff;
+    border-color: var(--theme-token-colorPrimary);
 }
 
 .app-calendar-item__humidity {
@@ -333,7 +333,7 @@
 .app-calendar-item__humidity__title {
     font-weight: 300;
     font-size: 14px;
-    color: #1b7aff;
+    color: var(--theme-token-colorPrimary);
 }
 
 .app-calendar-day.--passed .app-calendar-item__humidity__title {
@@ -343,7 +343,7 @@
 .app-calendar-item__humidity__value {
     font-size: 32px;
     font-weight: 400;
-    color: #1b7aff;
+    color: var(--theme-token-colorPrimary);
 }
 
 .app-calendar-day.--passed .app-calendar-item__humidity__value {
@@ -356,7 +356,7 @@
 }
 
 .app-calendar-day.--selected {
-    border: 3px solid #1e5bb1;
+    border: 3px solid var(--theme-token-colorPrimary);
 }
 
 .app-calendar-select {
@@ -378,7 +378,7 @@
 
 .app-calendar-day.--filter-day {
     box-shadow: 1px 6px 10px 1px rgb(82 82 82 / 42%);
-    border-color: #1b7aff;
+    border-color: var(--theme-token-colorPrimary);
     transform: scale(1.07);
 }
 
@@ -523,4 +523,19 @@
 
 body.--loading {
     opacity: .7 !important;
+}
+
+#documents img {
+    width: 100%;
+}
+
+#documents {
+    max-width: 50vw;
+    display: grid;
+    grid-gap: 10px;
+}
+
+#documents .f-button {
+    background: none;
+    color: #000;
 }

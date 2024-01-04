@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, Popover } from "antd";
 import {
     LogoutOutlined,
-    DashboardOutlined,
-    PicRightOutlined
+    DashboardOutlined
 } from '@ant-design/icons';
 
 // Context
@@ -50,9 +49,6 @@ const AppHeader = () => {
                         <div className="app-header-user-content">
                             <Button className="app-header-auth__button" type={'link'} href={`${process.env.REACT_APP_BACKEND}/admin`} target={'_blank'}>
                                 <DashboardOutlined /> Панель управления
-                            </Button>
-                            <Button className="app-header-auth__button" type={'link'} onClick={() => navigate("/docs")}>
-                                <PicRightOutlined /> Документация
                             </Button>
                             <Button
                                 className="app-header-auth__button"
