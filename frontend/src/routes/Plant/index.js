@@ -15,7 +15,8 @@ import {
     Select,
     Popconfirm,
     Input,
-    Tooltip
+    Tooltip,
+    FloatButton
 } from "antd";
 import {
     SmileOutlined,
@@ -25,6 +26,9 @@ import {
     MinusSquareOutlined, ClockCircleOutlined, AppstoreOutlined
 } from '@ant-design/icons';
 
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+
 import DayCard from "../../components/DayCard";
 
 import dayjs from 'dayjs';
@@ -32,6 +36,9 @@ import 'dayjs/locale/ru';
 
 // Styles
 import './styles.css'
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
+import ReactMarkdown from "react-markdown";
 
 dayjs.locale('ru-ru');
 
@@ -45,6 +52,7 @@ const Plant = () => {
 
     const [isLoading, setIsLoading] = useState(true)
     const [plantPage, setPlantPage] = useState([])
+    const [docsPage, setDocsPage] = useState([])
 
     const [tags, setTags] = useState([])
 
@@ -75,6 +83,20 @@ const Plant = () => {
             })
             .catch((error) => console.log(error))
             .finally(() => setIsLoading(false));
+
+        axios({
+            method: 'get',
+            url: `${process.env.REACT_APP_BACKEND}/api/document`,
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        }).then(function (data) {
+            setDocsPage(data.data.data.attributes)
+        }).catch(function (error) {
+            console.log(error);
+        }).finally(function () {
+            setIsLoading(false)
+        });
     }, [defaultPageURL, navigate])
 
     const CalendarFilter = () => {
@@ -548,6 +570,20 @@ const Plant = () => {
         return `${day}/${month}/${year}`
     }
 
+    const openDocumentsEvent = () => {
+        new Fancybox(
+            [
+                {
+                    src: "#documents",
+                    type: "inline",
+                },
+            ],
+            {
+                // Your custom options
+            }
+        );
+    }
+
     return (
         <>
             <Helmet>
@@ -682,6 +718,26 @@ const Plant = () => {
                     </>
                 )}
             </Card>
+            <FloatButton onClick={(e) => openDocumentsEvent(e)} />
+            <div id={'documents'} style={{display: 'none'}}>
+                <ReactMarkdown
+                    transformImageUri={
+                        function (src) {
+                            src = `${process.env.REACT_APP_BACKEND}${src}`
+                            return src
+                        }
+                    }
+                    transformLinkUri={
+                        function (href) {
+                            href = `${process.env.REACT_APP_BACKEND}${href}`
+                            return href
+                        }
+                    }
+                    remarkPlugins={[remarkGfm, remarkBreaks]}
+                >
+                    {docsPage.content}
+                </ReactMarkdown>
+            </div>
         </>
     );
 }

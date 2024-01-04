@@ -29,7 +29,7 @@
 }
 
 .day.--loading .ant-spin.ant-spin-lg .ant-spin-dot-item {
-    background: #1677ff;
+    background: var(--theme-token-colorPrimary);
     width: 33px;
     height: 33px;
 }

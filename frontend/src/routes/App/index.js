@@ -1,6 +1,5 @@
 import React from 'react';
-import { ConfigProvider, Layout } from "antd";
-import ruRU from 'antd/locale/ru_RU';
+import { Layout, theme } from "antd";
 
 // Routes
 import AppRoutes from "../../Routes";
@@ -14,18 +13,22 @@ import './styles.css'
 // Functions & variables
 const { Header, Content } = Layout;
 
+const { useToken } = theme;
+
 const App = () => {
+    const { token } = useToken();
+
+    document.body.style = `--theme-token-colorPrimary: ${token.colorPrimary}`
+
     return (
-        <ConfigProvider locale={ruRU}>
-            <Layout className="app-layout">
-                <Header className="app-header">
-                    <AppHeader />
-                </Header>
-                <Content className="app-router">
-                    <AppRoutes />
-                </Content>
-            </Layout>
-        </ConfigProvider>
+        <Layout className="app-layout">
+            <Header className="app-header">
+                <AppHeader />
+            </Header>
+            <Content className="app-router">
+                <AppRoutes />
+            </Content>
+        </Layout>
     );
 }
 
