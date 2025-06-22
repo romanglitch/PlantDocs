@@ -2,11 +2,11 @@
 echo Loading...
 
 :: Backend
-cd /d "D:\GLITCHWEB\plant-docs\backend"
+cd /d "C:\Users\romanglitch\Dev\PlantDocs_old\backend"
 start cmd /k "npm start"
 
 :: Frontend
-cd /d "D:\GLITCHWEB\plant-docs\frontend"
+cd /d "C:\Users\romanglitch\Dev\PlantDocs_old\frontend"
 start cmd /k "serve -s build"
 
 echo Plantdocs successfully loaded!
