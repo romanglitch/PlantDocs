@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import qs from "qs"
 import { getToken } from "../../helpers";
-import {countDays, formatDate, getPostfix} from "../../publicHelpers";
+import {countDays, countWeeks, formatDate, getPostfix} from "../../publicHelpers";
 import { Helmet } from 'react-helmet-async';
 
 import {
@@ -539,19 +539,19 @@ const Plant = () => {
 
         switch (index) {
             case 1:
-                indexTitle = `Малой`
+                indexTitle = `Проращивание семян`
                 break;
             case 2:
-                indexTitle = `Шлем`
+                indexTitle = `Сеянцы`
                 break;
             case 13:
-                indexTitle = `Водопад`
+                indexTitle = `Вегетация`
                 break;
             case 14:
-                indexTitle = `Пустыня`
+                indexTitle = `Предцвет`
                 break;
             case 15:
-                indexTitle = `Лазарет`
+                indexTitle = `Цветение`
                 break;
             default:
                 indexTitle = `${index - 2} неделя`
@@ -607,22 +607,26 @@ const Plant = () => {
                                 <div className="app-plant-header__content">
                                     <div className="app-plant-header__days">
                                         {countDays(plantPage.weeks)}
-                                        <span>{getPostfix(countDays(plantPage.weeks), 'день', 'дня', 'дней')}</span>
                                     </div>
-                                    <div className="app-plant-header__info">
-                                        <div className="app-plant-header__title">
-                                            {plantPage.Name}
-                                        </div>
-                                        <div className="app-plant-header__date">
-                                            <ClockCircleOutlined />
-                                            <span>{formatDate(plantPage.updatedAt)}</span>
-                                        </div>
-                                        {plantPage.category.data ? (
-                                            <div className="app-plant-header__category">
-                                                <AppstoreOutlined />
-                                                <span>{plantPage.category.data.attributes.Name}</span>
+                                    <div className="app-plant-header__entry">
+                                        <div className="app-plant-header__info">
+                                            <div className="app-plant-header__title">
+                                                {plantPage.Name}
                                             </div>
-                                        ) : false}
+                                            <div className="app-plant-header__date">
+                                                <ClockCircleOutlined/>
+                                                <span>{formatDate(plantPage.updatedAt)}</span>
+                                            </div>
+                                            {plantPage.category.data ? (
+                                                <div className="app-plant-header__category">
+                                                    <AppstoreOutlined/>
+                                                    <span>{plantPage.category.data.attributes.Name}</span>
+                                                </div>
+                                            ) : false}
+                                        </div>
+                                        <div className="app-plant-header__weeks">
+                                            {countWeeks(plantPage.weeks)}
+                                        </div>
                                     </div>
                                     <div className="app-plant-header__actions">
                                         <ArchiveButton/>
@@ -638,8 +642,9 @@ const Plant = () => {
                                     key: '1',
                                     label: (
                                         <div className="card-plant-tabs__label">
-                                            <SmileOutlined />
-                                            Растение ({`${countDays(plantPage.weeks)} ${getPostfix(countDays(plantPage.weeks), 'день', 'дня', 'дней')}`})
+                                            <SmileOutlined/>
+                                            Растение
+                                            ({`${countDays(plantPage.weeks)} ${getPostfix(countDays(plantPage.weeks), 'день', 'дня', 'дней')}`})
                                         </div>
                                     ),
                                     children: (
